@@ -1,0 +1,104 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer base {
+  :root {
+    --background: rgb(0, 0, 0);
+    /* Black background */
+    --foreground: rgb(255, 255, 255);
+    /* White foreground (text) */
+    --card: rgb(30, 30, 30);
+    /* Dark gray for cards */
+    --card-foreground: rgb(255, 255, 255);
+    --popover: rgb(30, 30, 30);
+    /* Similar to card for uniformity */
+    --popover-foreground: rgb(255, 255, 255);
+    --primary: rgb(255, 255, 255);
+    /* White text as primary color */
+    --primary-foreground: rgb(0, 0, 0);
+    /* Black foreground for contrast */
+    --secondary: rgb(45, 45, 45);
+    /* Slightly lighter black for secondary */
+    --secondary-foreground: rgb(255, 255, 255);
+    --muted: rgb(45, 45, 45);
+    /* Muted elements */
+    --muted-foreground: rgb(180, 180, 180);
+    /* Lighter gray for muted text */
+    --accent: rgb(60, 60, 60);
+    /* Accent color, dark gray */
+    --accent-foreground: rgb(255, 255, 255);
+    --destructive: rgb(255, 77, 77);
+    /* Red for destructive actions */
+    --destructive-foreground: rgb(255, 255, 255);
+    --border: rgb(75, 75, 75);
+    /* Darker gray for borders */
+    --input: rgb(75, 75, 75);
+    /* Matching border color */
+    --ring: rgb(100, 100, 100);
+    /* Subtle gray for focus rings */
+    --chart-1: rgb(226, 38, 61);
+    --chart-2: rgb(35, 137, 129);
+    --chart-3: rgb(52, 112, 147);
+    --chart-4: rgb(102, 197, 152);
+    --chart-5: rgb(101, 226, 172);
+    --radius: 0.5rem;
+    /* Border radius for rounded corners */
+  }
+
+  .dark {
+    --background: rgb(0, 0, 0);
+    /* Black background for dark mode */
+    --foreground: rgb(255, 255, 255);
+    /* White text for dark mode */
+    --card: rgb(30, 30, 30);
+    /* Dark card color */
+    --card-foreground: rgb(255, 255, 255);
+    --popover: rgb(30, 30, 30);
+    --popover-foreground: rgb(255, 255, 255);
+    --primary: rgb(255, 255, 255);
+    /* White primary text */
+    --primary-foreground: rgb(0, 0, 0);
+    /* Black foreground for contrast */
+    --secondary: rgb(45, 45, 45);
+    /* Slightly lighter black for secondary */
+    --secondary-foreground: rgb(255, 255, 255);
+    --muted: rgb(45, 45, 45);
+    /* Dark muted background */
+    --muted-foreground: rgb(180, 180, 180);
+    /* Gray for muted text */
+    --accent: rgb(60, 60, 60);
+    /* Accent in dark gray */
+    --accent-foreground: rgb(255, 255, 255);
+    --destructive: rgb(255, 77, 77);
+    /* Red for destructive actions */
+    --destructive-foreground: rgb(255, 255, 255);
+    --border: rgb(75, 75, 75);
+    /* Dark gray borders */
+    --input: rgb(75, 75, 75);
+    /* Matching border for inputs */
+    --ring: rgb(100, 100, 100);
+    /* Subtle gray focus ring */
+    --chart-1: rgb(0, 112, 192);
+    --chart-2: rgb(77, 100, 115);
+    --chart-3: rgb(206, 46, 108);
+    --chart-4: rgb(177, 119, 156);
+    --chart-5: rgb(233, 120, 143);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+

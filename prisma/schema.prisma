@@ -1,0 +1,22 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+        
+        
+model Paste {
+  id         String   @id @default(uuid()) // Use UUID for paste ID
+  title      String
+  content    String
+  userId     String   
+  createdAt  DateTime @default(now())
+  expiresAt  DateTime?
+  visibility String   @default("public") // Can be 'public' or 'private'
+  language   String
+}
