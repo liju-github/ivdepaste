@@ -2,64 +2,89 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/src/providers/auth-provider';
-import { supabase } from "@/src/lib/supabase"
-import { HomePageProps } from "@/types/index"
+import { supabase } from "@/src/lib/supabase";
 
 
+interface Paste {
+    id: string;
+    content: string;
+    createdAt: string;
+}
 
-const HomePage = ({ toggle = false }: HomePageProps) => {
+const HomePage = () => {
     const { user, isLoading: authLoading, error: authError } = useAuth();
-    const [pastes, setPastes] = useState<any[]>([]);
+    const [pastes, setPastes] = useState<Paste[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-
         const fetchPastes = async () => {
             if (authLoading) return;
+
             if (!user) {
-                setError('User not authenticated');
+                const pastesIdArray: string[] = JSON.parse(localStorage.getItem("pasteIdArray") || "[]");
+
+                if (pastesIdArray.length > 0) {
+                    try {
+                        const { data, error } = await supabase
+                            .from('paste')
+                            .select('*')
+                            .in('id', pastesIdArray);
+
+                        if (error) {
+                            throw new Error(error.message);
+                        }
+
+                        setPastes(data || []);
+                    } catch (err) {
+                        setError('Failed to fetch pastes: ' + err);
+                    }
+                } else {
+                    setError('No pastes found in localStorage.');
+                }
+
                 setLoading(false);
                 return;
             }
 
+            const toggle = true
+
             try {
                 if (toggle) {
-                    console.log("running prisma")
                     const response = await fetch(`/api/pastes?userId=${user.id}`);
 
                     if (!response.ok) {
                         throw new Error('Failed to fetch pastes');
                     }
 
-                    const data = await response.json();
-
+                    const data: Paste[] = await response.json(); // Specify the correct type
                     setPastes(data || []);
                 } else {
-                    console.log("running supabase")
                     const { data, error } = await supabase
                         .from('paste')
                         .select('*')
                         .eq('userId', user.id)
                         .order('createdAt', { ascending: false });
 
-                    setPastes(data || []);
-
                     if (error) {
                         throw new Error(error.message);
                     }
 
+                    setPastes(data || []);
                 }
-
-            } catch (err: any) {
-                setError(err.message);
+            } catch (error: unknown) {
+                if (error instanceof Error) {
+                    setError(error.message);
+                } else {
+                    setError(String(error));
+                }
             } finally {
                 setLoading(false);
             }
         };
 
         fetchPastes();
-    }, [authLoading]);
+    }, [authLoading, user]);
 
     if (authLoading) {
         return <p>Loading authentication...</p>;

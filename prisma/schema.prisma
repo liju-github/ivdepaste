@@ -10,13 +10,14 @@ datasource db {
 }
         
         
-model Paste {
-  id         String   @id @default(uuid()) // Use UUID for paste ID
+model paste {
+  id         String   @id @default(uuid())
   title      String
   content    String
-  userId     String   
+  userId     String?
+  burn       Boolean @default(false)
   createdAt  DateTime @default(now())
   expiresAt  DateTime?
-  visibility String   @default("public") // Can be 'public' or 'private'
+  visibility String
   language   String
 }

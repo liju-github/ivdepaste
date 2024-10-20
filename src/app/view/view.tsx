@@ -33,9 +33,7 @@ export default function ViewPaste() {
     const [error, setError] = useState<ErrorState | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    console.log("recieveddddd")
     useEffect(() => {
-    
         const fetchPaste = async () => {
             if (!pasteId) {
                 setError({ type: 'error', message: 'No paste ID provided' });
@@ -44,7 +42,6 @@ export default function ViewPaste() {
             }
 
             try {
-                // Check if paste exists and isn't expired
                 const { data: paste, error: fetchError } = await supabase
                     .from('paste')
                     .select('*')
@@ -61,13 +58,11 @@ export default function ViewPaste() {
                     return;
                 }
 
-                // Check if paste is expired
                 if (paste.expires_at && new Date(paste.expires_at) < new Date()) {
                     setError({ type: 'expired', message: 'This paste has expired' });
                     return;
                 }
 
-                // Check visibility permissions
                 const { data: session } = await supabase.auth.getSession();
                 if (paste.visibility === 'private' && paste.user_id !== session?.session?.user?.id) {
                     setError({ type: 'error', message: 'You do not have permission to view this paste' });
@@ -76,10 +71,7 @@ export default function ViewPaste() {
 
                 setPaste(paste as Paste);
             } catch (error) {
-                setError({
-                    type: 'error',
-                    message: 'An unexpected error occurred'
-                });
+                setError({ type: 'error', message: 'An unexpected error occurred'+error });
             } finally {
                 setIsLoading(false);
             }
@@ -88,6 +80,7 @@ export default function ViewPaste() {
         fetchPaste();
     }, [pasteId]);
 
+    // Loading Skeleton
     if (isLoading) {
         return (
             <div className="container mx-auto p-4">
@@ -105,6 +98,7 @@ export default function ViewPaste() {
         );
     }
 
+    // Error Handling
     if (error) {
         return (
             <div className="container mx-auto p-4">
@@ -121,10 +115,12 @@ export default function ViewPaste() {
         );
     }
 
+    // No paste or valid data
     if (!paste) {
         return null;
     }
 
+    // Render the Paste Content
     return (
         <div className="container mx-auto p-4">
             <Card>

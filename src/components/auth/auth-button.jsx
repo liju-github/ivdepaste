@@ -5,9 +5,10 @@ import { useAuth } from "@/src/providers/auth-provider";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/src/components/ui/alert";
 import { useState } from "react";
+import Image from "next/image";
 
 export function AuthButton() {
-    const { user, isLoading, error, signInWithGoogle, signOut } = useAuth();
+    const { user, error, signInWithGoogle, signOut } = useAuth();
     const [isButtonLoading, setIsButtonLoading] = useState(false);
 
     // Handle Google SignIn
@@ -40,7 +41,7 @@ export function AuthButton() {
             {user ? (
                 <div className="flex items-center gap-4">
                     {user.user_metadata.avatar_url && (
-                        <img
+                        <Image
                             src={user.identities[0].identity_data.avatar_url}
                             alt="Profile"
                             className="w-8 h-8 rounded-full"

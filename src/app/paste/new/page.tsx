@@ -46,7 +46,7 @@ export default function NewPaste() {
             const expiresAt = expirationMap[expiration as keyof typeof expirationMap];
             const pasteId = uuidv4();
 
-            const { data: pasteData, error: pasteError } = await supabase
+            const {  error: pasteError } = await supabase
                 .from('paste')
                 .insert([
                     {
@@ -62,12 +62,17 @@ export default function NewPaste() {
                 ])
                 .select()
                 .single();
+            if (userId == null) {
+                const pasteIdArray: string[] = JSON.parse(localStorage.getItem("pasteIdArray") || "[]");
+                pasteIdArray.push(pasteId);
+                localStorage.setItem("pasteIdArray", JSON.stringify(pasteIdArray));
+            }
+
 
             if (pasteError) {
                 console.error('Supabase error:', pasteError);
                 setErrorMessage('Error creating paste: ' + pasteError.message);
             } else {
-                // Redirect to the unique paste URL with the pasteId
                 router.push(`/view?pasteId=${pasteId}`);
                 router.refresh();
             }

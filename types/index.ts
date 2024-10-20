@@ -3,6 +3,7 @@ export interface Paste {
     title: string;
     content: string;
     user_id?: string;
+    burn: Boolean;
     created_at: string;
     expires_at?: string;
     visibility: 'public' | 'private';
@@ -10,5 +11,7 @@ export interface Paste {
 }
 
 export interface HomePageProps {
-    toggle: boolean;
+    toggle?: boolean;
 }
+
+
