@@ -5,7 +5,8 @@ import { useAuth } from "@/src/providers/auth-provider";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/src/components/ui/alert";
 import { useState } from "react";
-import Image from "next/image";
+import "@/src/app/globals.css"
+import defaultimage from "./default.jpg";
 
 export function AuthButton() {
     const { user, error, signInWithGoogle, signOut } = useAuth();
@@ -27,7 +28,7 @@ export function AuthButton() {
 
     if (error) {
         return (
-            <Alert variant="destructive">
+            <Alert variant="destructive" className="bg-destructive text-destructive-foreground">
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
                     {error.message}
@@ -40,18 +41,16 @@ export function AuthButton() {
         <div className="flex items-center gap-4">
             {user ? (
                 <div className="flex items-center gap-4">
-                    {user.user_metadata.avatar_url && (
-                        <Image
-                            src={user.identities[0].identity_data.avatar_url}
-                            alt="Profile"
-                            className="w-8 h-8 rounded-full"
-                        />
-                    )}
+                    <img
+                        src={user.user_metadata.avatar_url || defaultimage}
+                        alt="Profile"
+                        className="w-8 h-8 rounded-full"
+                    />
                     <div className="flex flex-col">
-                        <span className="text-sm font-medium">
+                        <span className="text-primary font-medium">
                             {user.user_metadata.full_name}
                         </span>
-                        <span className="text-sm text-gray-400">
+                        <span className="text-primary text-sm">
                             {user.email}
                         </span>
                     </div>
@@ -59,6 +58,7 @@ export function AuthButton() {
                         onClick={handleSignOut}
                         variant="outline"
                         disabled={isButtonLoading}
+                        className="bg-primary text-primary-foreground border-primary hover:bg-primary-foreground hover:text-primary"
                     >
                         {isButtonLoading ? 'Signing out...' : 'Sign Out'}
                     </Button>
@@ -67,7 +67,7 @@ export function AuthButton() {
                 <Button
                     onClick={handleSignIn}
                     disabled={isButtonLoading}
-                    className="flex items-center gap-2"
+                    className="bg-primary text-primary-foreground hover:bg-primary-foreground hover:text-primary flex items-center gap-2"
                 >
                     {isButtonLoading ? (
                         <>

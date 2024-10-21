@@ -5,7 +5,13 @@ services:
     build: .
     ports:
       - "3000:3000"
+    env_file:
+      - .env 
     environment:
-      DIRECT_URL: ${DIRECT_URL} 
-    volumes:
-      - .:/app
+      - DATABASE_URL=${DATABASE_URL}
+      - DIRECT_URL=${DIRECT_URL} 
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

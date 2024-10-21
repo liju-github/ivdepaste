@@ -1,30 +1,26 @@
-import type { Metadata } from "next";
-import "./globals.css";
-import { AuthProvider } from "@/src/providers/auth-provider";
-import { Navbar } from "@/src/components/common/Navbar";
+import { AuthProvider } from "../providers/auth-provider";
 import { ThemeProvider } from "../components/ui/theme-provider";
-
-
-export const metadata: Metadata = {
-  title: "ivdepaste",
-  description: "opensource pastebin alternative",
-};
-
+import { Navbar } from "@/src/components/common/Navbar"
+import "./globals.css"
+import { Toaster } from "@/src/components/ui/toaster";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+
   return (
     <html lang="en">
       <body>
         <AuthProvider>
+          
           <ThemeProvider
             attribute="class"
-            defaultTheme="dark"
+            defaultTheme="system"
             enableSystem
             disableTransitionOnChange
           >
             <Navbar />
             <main>{children}</main>
           </ThemeProvider>
+          <Toaster />
         </AuthProvider>
       </body>
     </html>

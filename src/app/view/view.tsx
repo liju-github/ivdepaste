@@ -7,27 +7,21 @@ import { Card, CardHeader, CardContent, CardFooter } from '@/src/components/ui/c
 import { Alert, AlertDescription } from '@/src/components/ui/alert';
 import { Skeleton } from '@/src/components/ui/skeleton';
 import { supabase } from '@/src/lib/supabase';
+import { Paste } from '@/types';
 
-// Type definitions
-interface Paste {
-    id: string;
-    title: string;
-    content: string;
-    created_at: string;
-    expires_at?: string | null;
-    user_id?: string | null;
-    visibility: 'public' | 'private';
-    language: string;
-}
 
 interface ErrorState {
     type: 'error' | 'not-found' | 'expired';
     message: string;
 }
+interface Params {
+    pasteId: string;
+    [key: string]: string;  
+}
 
 export default function ViewPaste() {
     const router = useRouter();
-    const { pasteId } = useParams();
+    const  pasteId  = useParams<Params>();
 
     const [paste, setPaste] = useState<Paste | null>(null);
     const [error, setError] = useState<ErrorState | null>(null);
@@ -136,11 +130,11 @@ export default function ViewPaste() {
 
                 <CardFooter className="flex flex-col items-start gap-2">
                     <p className="text-sm text-muted-foreground">
-                        Created: {new Date(paste.created_at).toLocaleString()}
+                        Created: {new Date(paste.createdAt).toLocaleString()}
                     </p>
-                    {paste.expires_at && (
+                    {paste.expiresAt && (
                         <p className="text-sm text-muted-foreground">
-                            Expires: {new Date(paste.expires_at).toLocaleString()}
+                            Expires: {new Date(paste.expiresAt).toLocaleString()}
                         </p>
                     )}
                     <Button

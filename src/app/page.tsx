@@ -7,13 +7,13 @@ export default function Home() {
   return (
     <main className="container mx-auto p-4">
       <Card className="p-6">
-        <h1 className="text-3xl font-bold mb-4">Welcome to PasteBin</h1>
+        <h1 className="text-3xl font-bold mb-4">welcome to ivdepaste</h1>
         <div className="space-x-4">
           <Button asChild>
-            <Link href="/paste/new" legacyBehavior>Create New Paste</Link>
+            <Link href="/paste/new">Create New Paste</Link>
           </Button>
           <Button variant="outline" asChild>
-            <Link href="/paste/my" legacyBehavior>My Pastes</Link>
+            <Link href="/paste/my">My Pastes</Link>
           </Button>
         </div>
       </Card>

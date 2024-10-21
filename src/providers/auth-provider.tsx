@@ -82,7 +82,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                    redirectTo: `${window.location.origin}/auth/callback`,
                     queryParams: {
                         access_type: 'offline',
                         prompt: 'consent',
@@ -90,6 +89,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     scopes: 'email profile',
                 },
             });
+
+            router.refresh();
 
             if (error) throw error;
             console.log('Google sign-in successful');

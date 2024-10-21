@@ -1,6 +1,6 @@
-
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
@@ -8,16 +8,22 @@ datasource db {
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
-        
-        
+
 model paste {
-  id         String   @id @default(uuid())
-  title      String
-  content    String
-  userId     String?
-  burn       Boolean @default(false)
-  createdAt  DateTime @default(now())
-  expiresAt  DateTime?
-  visibility String
-  language   String
+  id                  String    @id @default(uuid())
+  title               String
+  content             String
+  userId              String?
+  burn                Boolean   @default(false)
+  createdAt           DateTime  @default(now())
+  expiresAt           DateTime?
+  localLanguage       String
+  programmingLanguage String
+}
+
+model ConnectionTime {
+  id             Int      @id @default(autoincrement())
+  connectionTime DateTime @unique
+  createdAt      DateTime @default(now())
+  clientIp       String
 }

@@ -2,12 +2,12 @@ export interface Paste {
     id: string;
     title: string;
     content: string;
-    user_id?: string;
-    burn: Boolean;
-    created_at: string;
-    expires_at?: string;
-    visibility: 'public' | 'private';
-    language: string;
+    userId?: string;
+    burn: boolean;
+    createdAt: string;  
+    expiresAt: string | null;  
+    localLanguage: string;  
+    programmingLanguage: string;  
 }
 
 export interface HomePageProps {

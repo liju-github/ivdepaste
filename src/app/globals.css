@@ -22,86 +22,110 @@ body {
 
 @layer base {
   :root {
-    --background: rgb(0, 0, 0);
-    /* Black background */
-    --foreground: rgb(255, 255, 255);
-    /* White foreground (text) */
-    --card: rgb(30, 30, 30);
+    --background: 0 0% 100%;
+    /* Dark background */
+    --foreground: 240 10% 3.9%;
+    /* Light text color */
+    --card: 0 0% 100%;
     /* Dark gray for cards */
-    --card-foreground: rgb(255, 255, 255);
-    --popover: rgb(30, 30, 30);
-    /* Similar to card for uniformity */
-    --popover-foreground: rgb(255, 255, 255);
-    --primary: rgb(255, 255, 255);
-    /* White text as primary color */
-    --primary-foreground: rgb(0, 0, 0);
-    /* Black foreground for contrast */
-    --secondary: rgb(45, 45, 45);
-    /* Slightly lighter black for secondary */
-    --secondary-foreground: rgb(255, 255, 255);
-    --muted: rgb(45, 45, 45);
-    /* Muted elements */
-    --muted-foreground: rgb(180, 180, 180);
-    /* Lighter gray for muted text */
-    --accent: rgb(60, 60, 60);
-    /* Accent color, dark gray */
-    --accent-foreground: rgb(255, 255, 255);
-    --destructive: rgb(255, 77, 77);
+    --card-foreground: 240 10% 3.9%;
+    /* Light text in cards */
+    --popover: 0 0% 100%;
+    /* Popover background */
+    --popover-foreground: 240 10% 3.9%;
+    /* Popover text color */
+    --primary: 240 5.9% 10%;
+    /* White for primary text */
+    --primary-foreground: 0 0% 98%;
+    /* Black foreground for high contrast */
+    --secondary: 240 4.8% 95.9%;
+    /* Slightly lighter black for secondary elements */
+    --secondary-foreground: 240 5.9% 10%;
+    /* Lighter gray for secondary text */
+    --muted: 240 4.8% 95.9%;
+    /* Muted background */
+    --muted-foreground: 240 3.8% 46.1%;
+    /* Muted text */
+    --accent: 240 4.8% 95.9%;
+    /* Accent color */
+    --accent-foreground: 240 5.9% 10%;
+    /* Accent foreground text */
+    --destructive: 0 84.2% 60.2%;
     /* Red for destructive actions */
-    --destructive-foreground: rgb(255, 255, 255);
-    --border: rgb(75, 75, 75);
+    --destructive-foreground: 0 0% 98%;
+    /* Destructive action text */
+    --border: 240 5.9% 90%;
     /* Darker gray for borders */
-    --input: rgb(75, 75, 75);
-    /* Matching border color */
-    --ring: rgb(100, 100, 100);
-    /* Subtle gray for focus rings */
-    --chart-1: rgb(226, 38, 61);
-    --chart-2: rgb(35, 137, 129);
-    --chart-3: rgb(52, 112, 147);
-    --chart-4: rgb(102, 197, 152);
-    --chart-5: rgb(101, 226, 172);
+    --input: 240 5.9% 90%;
+    /* Input background */
+    --ring: 240 10% 3.9%;
+    /* Subtle focus ring color */
+
+    --chart-1: 12 76% 61%;
+    /* Red chart color */
+    --chart-2: 173 58% 39%;
+    /* Teal chart color */
+    --chart-3: 197 37% 24%;
+    /* Blue chart color */
+    --chart-4: 43 74% 66%;
+    /* Light green chart color */
+    --chart-5: 27 87% 67%;
+    /* Light lime chart color */
+
     --radius: 0.5rem;
     /* Border radius for rounded corners */
   }
 
   .dark {
-    --background: rgb(0, 0, 0);
-    /* Black background for dark mode */
-    --foreground: rgb(255, 255, 255);
-    /* White text for dark mode */
-    --card: rgb(30, 30, 30);
-    /* Dark card color */
-    --card-foreground: rgb(255, 255, 255);
-    --popover: rgb(30, 30, 30);
-    --popover-foreground: rgb(255, 255, 255);
-    --primary: rgb(255, 255, 255);
-    /* White primary text */
-    --primary-foreground: rgb(0, 0, 0);
-    /* Black foreground for contrast */
-    --secondary: rgb(45, 45, 45);
-    /* Slightly lighter black for secondary */
-    --secondary-foreground: rgb(255, 255, 255);
-    --muted: rgb(45, 45, 45);
-    /* Dark muted background */
-    --muted-foreground: rgb(180, 180, 180);
-    /* Gray for muted text */
-    --accent: rgb(60, 60, 60);
-    /* Accent in dark gray */
-    --accent-foreground: rgb(255, 255, 255);
-    --destructive: rgb(255, 77, 77);
+    --background: 240 10% 3.9%;
+    /* Same dark background for dark mode */
+    --foreground: 0 0% 98%;
+    /* Light text color */
+    --card: 240 10% 3.9%;
+    /* Card background */
+    --card-foreground: 0 0% 98%;
+    /* Card text color */
+    --popover: 240 10% 3.9%;
+    /* Popover background */
+    --popover-foreground: 0 0% 98%;
+    /* Popover text color */
+    --primary: 0 0% 98%;
+    /* White text for primary content */
+    --primary-foreground: 240 5.9% 10%;
+    /* High contrast for readability */
+    --secondary: 240 3.7% 15.9%;
+    /* Secondary elements */
+    --secondary-foreground: 0 0% 98%;
+    /* Secondary text color */
+    --muted: 240 3.7% 15.9%;
+    /* Muted background color */
+    --muted-foreground: 240 5% 64.9%;
+    /* Muted text color */
+    --accent: 240 3.7% 15.9%;
+    /* Accent color */
+    --accent-foreground: 0 0% 98%;
+    /* Accent text color */
+    --destructive: 0 62.8% 30.6%;
     /* Red for destructive actions */
-    --destructive-foreground: rgb(255, 255, 255);
-    --border: rgb(75, 75, 75);
-    /* Dark gray borders */
-    --input: rgb(75, 75, 75);
-    /* Matching border for inputs */
-    --ring: rgb(100, 100, 100);
-    /* Subtle gray focus ring */
-    --chart-1: rgb(0, 112, 192);
-    --chart-2: rgb(77, 100, 115);
-    --chart-3: rgb(206, 46, 108);
-    --chart-4: rgb(177, 119, 156);
-    --chart-5: rgb(233, 120, 143);
+    --destructive-foreground: 0 0% 98%;
+    /* White text in destructive actions */
+    --border: 240 3.7% 15.9%;
+    /* Border color */
+    --input: 240 3.7% 15.9%;
+    /* Input background */
+    --ring: 240 4.9% 83.9%;
+    /* Focus ring */
+
+    --chart-1: 220 70% 50%;
+    /* Chart red */
+    --chart-2: 160 60% 45%;
+    /* Chart teal */
+    --chart-3: 30 80% 55%;
+    /* Chart purple */
+    --chart-4: 280 65% 60%;
+    /* Chart pink */
+    --chart-5: 340 75% 55%;
+    /* Chart orange */
   }
 }
 

@@ -16,25 +16,18 @@ RUN npm install
 # Copy the rest of the app files into the container
 COPY . .
 
-# Ensure Prisma is generating the client before running the app
+# Generate Prisma client (ensure the correct binary target is used)
 RUN npx prisma generate
 
-# Copy the dbsetup.sql file into the container
-COPY ./database/dbsetup.sql /tmp/dbsetup.sql
+# Push the Prisma schema to the database
+RUN npx prisma db push --accept-data-loss
 
-# Copy the init script into the container
-COPY ./database/init-db.sh /init-db.sh
-RUN chmod +x /init-db.sh
+# Run the database initialization
+RUN npm run supabaseinit
 
-# Verify the contents of dbsetup.sql and log
-RUN echo "Contents of dbsetup.sql:" && cat /tmp/dbsetup.sql
-
-
-# Verify the contents of init-db.sh and log
-RUN echo "Contents of init-db.sh:" && cat /init-db.sh 
 
 # Expose the port the app will run on
 EXPOSE 3000
 
-# Run the app and then the init script
-CMD ["sh", "-c", "/init-db.sh && npm run dev"]
+# Start the application
+CMD ["npm", "run", "dev"]

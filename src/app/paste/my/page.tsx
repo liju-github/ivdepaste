@@ -3,13 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/src/providers/auth-provider';
 import { supabase } from "@/src/lib/supabase";
-
-
-interface Paste {
-    id: string;
-    content: string;
-    createdAt: string;
-}
+import { Paste } from '@/types';
 
 const HomePage = () => {
     const { user, isLoading: authLoading, error: authError } = useAuth();
@@ -47,19 +41,24 @@ const HomePage = () => {
                 return;
             }
 
-            const toggle = true
+            const toggle = false;
 
             try {
                 if (toggle) {
-                    const response = await fetch(`/api/pastes?userId=${user.id}`);
+                    console.log("Fetching pastes from API");
 
+                    // Fetch pastes from your newly created API route
+                    const response = await fetch(`/api/pastes?userId=${user.id}`);
                     if (!response.ok) {
                         throw new Error('Failed to fetch pastes');
                     }
 
-                    const data: Paste[] = await response.json(); // Specify the correct type
-                    setPastes(data || []);
+                    const data = await response.json();
+                    setPastes(data);
                 } else {
+                    console.log("Running Supabase");
+
+                    // Fetch pastes from Supabase
                     const { data, error } = await supabase
                         .from('paste')
                         .select('*')
