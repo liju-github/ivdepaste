@@ -131,7 +131,7 @@ const HomePage: React.FC = () => {
         let dateCutoff: Date | null = null;
 
         if (selectedDateRange) {
-            dateCutoff = selectedDateRange; // Use the selected date directly
+            dateCutoff = selectedDateRange; 
         }
 
         const matchesDateRange = selectedDateRange ?
@@ -262,7 +262,7 @@ const HomePage: React.FC = () => {
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end">
                                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                            <DropdownMenuItem onClick={() => router.push(`/view?pasteId=${paste.id}`)}>
+                                            <DropdownMenuItem onClick={() => router.push(`/vie?pasteId=${paste.id}`)}>
                                                 View
                                             </DropdownMenuItem>
                                             <DropdownMenuItem onClick={async () => {

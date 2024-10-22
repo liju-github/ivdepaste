@@ -14,4 +14,17 @@ export interface HomePageProps {
     toggle?: boolean;
 }
 
+export const colorThemes = [
+    "default",
+    "dark",
+    "serika-dark",
+    "botanical",
+    "carbon",
+    "aurora",
+    "nebula",
+    "copper",
+    "beach-sand",
+    "tropical-ocean",
+    "sunset-warmth"
+];
 
