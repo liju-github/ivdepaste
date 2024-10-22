@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/src/components/ui/button';
 import { Card, CardHeader, CardContent, CardFooter } from '@/src/components/ui/card';
 import { Alert, AlertDescription } from '@/src/components/ui/alert';
@@ -14,14 +14,12 @@ interface ErrorState {
     type: 'error' | 'not-found' | 'expired';
     message: string;
 }
-interface Params {
-    pasteId: string;
-    [key: string]: string;  
-}
+
 
 export default function ViewPaste() {
     const router = useRouter();
-    const  pasteId  = useParams<Params>();
+    const searchParams = useSearchParams();
+    const pasteId = searchParams?.get('pasteId');
 
     const [paste, setPaste] = useState<Paste | null>(null);
     const [error, setError] = useState<ErrorState | null>(null);

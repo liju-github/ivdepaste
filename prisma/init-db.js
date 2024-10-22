@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import os from 'os'; // Import os module to get server's local IP address
+import os from 'os'; 
 
 const prisma = new PrismaClient();
 
@@ -7,38 +7,81 @@ async function main() {
   try {
     console.log('Starting database initialization...');
 
-    // Grant permissions to roles (optional)
-    console.log('Granting permissions...');
-    await prisma.$executeRaw`
-      GRANT USAGE ON SCHEMA "public" TO anon;
-    `;
-    await prisma.$executeRaw`
-      GRANT USAGE ON SCHEMA "public" TO authenticated;
-    `;
+    
+    console.log('Granting permissions to anon role...');
 
-    // Create the connection_time table (if it doesn't exist)
-    console.log('Creating connection_time table...');
+    
     await prisma.$executeRaw`
-      CREATE TABLE IF NOT EXISTS "connection_time" (
-        id SERIAL PRIMARY KEY,
-        connection_time timestamp DEFAULT CURRENT_TIMESTAMP,
-        server_ip VARCHAR(255)
-      );
-    `;
+    GRANT USAGE ON SCHEMA public TO anon;
+  `;
 
-    // Get the local server IP address (using os module)
+      
+      await prisma.$executeRaw`
+    GRANT SELECT ON ALL TABLES IN SCHEMA public TO anon;
+  `;
+
+      
+      await prisma.$executeRaw`
+    ALTER DEFAULT PRIVILEGES IN SCHEMA public
+    GRANT SELECT ON TABLES TO anon;
+  `;
+
+      
+      await prisma.$executeRaw`
+    GRANT SELECT ON ALL SEQUENCES IN SCHEMA public TO anon;
+  `;
+
+      await prisma.$executeRaw`
+    ALTER DEFAULT PRIVILEGES IN SCHEMA public
+    GRANT SELECT ON SEQUENCES TO anon;
+  `;
+
+
+      
+      console.log('Granting permissions to authenticated role...');
+
+      
+      await prisma.$executeRaw`
+    GRANT USAGE ON SCHEMA public TO authenticated;
+  `;
+
+      
+      await prisma.$executeRaw`
+    GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO authenticated;
+  `;
+
+      
+      await prisma.$executeRaw`
+    ALTER DEFAULT PRIVILEGES IN SCHEMA public
+    GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO authenticated;
+  `;
+
+      
+      await prisma.$executeRaw`
+    GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO authenticated;
+  `;
+
+      await prisma.$executeRaw`
+    ALTER DEFAULT PRIVILEGES IN SCHEMA public
+    GRANT USAGE, SELECT ON SEQUENCES TO authenticated;
+  `;
+
+    console.log('Permissions granted successfully.');
+
+
+    
     const serverIp = getServerIp();
 
-    // Insert the current time and server IP as the connection time
+    
     console.log('Inserting sample data...');
     await prisma.connectionTime.create({
       data: {
         connectionTime: new Date(),
-        clientIp: serverIp, // Store the server's local IP
+        clientIp: serverIp, 
       }
     });
 
-    // Verify data
+    
     const result = await prisma.connectionTime.findMany();
     console.log('Connection Time Table Data:', result);
 
@@ -51,18 +94,18 @@ async function main() {
   }
 }
 
-// Function to get the server's local IP address
+
 function getServerIp() {
   const networkInterfaces = os.networkInterfaces();
-  // Loop through network interfaces to find the local IPv4 address
+  
   for (const interfaceName in networkInterfaces) {
     for (const iface of networkInterfaces[interfaceName]) {
       if (iface.family === 'IPv4' && !iface.internal) {
-        return iface.address; // Return the first non-internal IPv4 address
+        return iface.address; 
       }
     }
   }
-  return '127.0.0.1'; // Default to localhost if no external IP found
+  return '127.0.0.1'; 
 }
 
 main()

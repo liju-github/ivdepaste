@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/src/components/ui/button";
 import { Card } from "@/src/components/ui/card";
@@ -26,12 +26,19 @@ export default function NewPaste() {
     const [programmingLanguage, setProgrammingLanguage] = useState('text');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [stats, setStats] = useState({
+        wordCount: 0,
+        charCount: 0,
+        lineCount: 0
+    });
     const { toast } = useToast();
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
         setErrorMessage('');
+
 
         try {
             const { data: sessionData, error: userError } = await supabase.auth.getSession();
@@ -51,13 +58,13 @@ export default function NewPaste() {
             const pasteData: Paste = {
                 id: uuidv4(),
                 title,
-                content,  // Save the original content here (no highlighting)
+                content,  
                 userId: userId || "",
                 burn: false,
                 createdAt: new Date().toISOString(),
                 expiresAt: expiresAt?.toISOString() || null,
                 localLanguage: 'text',
-                programmingLanguage, // Use the selected language
+                programmingLanguage, 
             };
 
             const { error: pasteError } = await supabase
@@ -101,10 +108,10 @@ export default function NewPaste() {
         }
     };
 
-    // Handle Auto-detect button click
+    
     const handleAutoDetect = async () => {
         try {
-            const detectedLanguage = await detectLanguage(content); // Function to detect the language
+            const detectedLanguage = await detectLanguage(content); 
             setProgrammingLanguage(detectedLanguage);
         } catch (err) {
             console.error('Error detecting language:', err);
@@ -116,7 +123,7 @@ export default function NewPaste() {
         }
     };
 
-    // Function to detect language (improved mock detection for demonstration)
+    
     const detectLanguage = (text: string): string => {
         if (text.includes('function') || text.includes('const')) {
             return 'javascript';
@@ -129,94 +136,147 @@ export default function NewPaste() {
         } else if (text.includes('console') || text.includes('alert')) {
             return 'javascript';
         }
-        return 'text'; // Default to plain text
+        return 'text'; 
     };
 
+    const calculateStats = (text: string) => {
+        
+        if (!text || text.trim() === '') {
+            return {
+                wordCount: 0,
+                charCount: 0,
+                lineCount: 0
+            };
+        }
+        
+        const charCount = text.length;
+
+        
+        const words = text.trim().split(/\s+/).filter(word => word.length > 0);
+        const wordCount = words.length;
+
+        
+        
+        const lines = text.split('\n');
+        const lineCount = text.endsWith('\n') ? lines.length - 1 : lines.length;
+
+        return {
+            wordCount,
+            charCount,
+            lineCount
+        };
+    };
+
+    useEffect(() => {
+        const newStats = calculateStats(content);
+        setStats(newStats);
+    }, [content]);
+
     return (
-        <div className="container mx-auto p-4 flex justify-center">
-            <Card className="p-6 bg-background w-full md:w-1/2">
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <div>
-                        <Input
-                            placeholder="Paste Title"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            required
-                            className="w-full"
-                        />
-                    </div>
+        <div className="container mx-auto p-4">
+            <div className="flex flex-col lg:flex-row gap-4">
+                {}
+                <div className="lg:w-2/3">
+                    <Card className="p-6 bg-background h-full">
+                        <div className="space-y-4">
+                            <Input
+                                placeholder="Paste Title"
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                required
+                                className="w-full"
+                            />
+                            <Textarea
+                                placeholder="Paste Content"
+                                value={content}
+                                onChange={(e) => setContent(e.target.value)}
+                                required
+                                className="min-h-[calc(100vh-300px)]"
+                            />
+                            <div className="flex justify-between text-sm text-muted-foreground">
+                                <span>Characters: {stats.charCount}</span>
+                                <span>Words: {stats.wordCount}</span>
+                                <span>Lines: {stats.lineCount}</span>
+                            </div>
+                        </div>
+                    </Card>
+                </div>
 
-                    <div>
-                        <Textarea
-                            placeholder="Paste Content"
-                            value={content}
-                            onChange={(e) => setContent(e.target.value)}
-                            required
-                            className="min-h-[250px] w-full"
-                        />
-                    </div>
+                {}
+                <div className="lg:w-1/3">
+                    <Card className="p-6 bg-background sticky top-4">
+                        <div className="space-y-6">
+                            <div className="space-y-2">
+                                <h3 className="text-lg font-medium">Paste Settings</h3>
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="text-sm text-muted-foreground">
+                                            Expiration
+                                        </label>
+                                        <Select
+                                            value={expiration}
+                                            onValueChange={setExpiration}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="1month">1 Month</SelectItem>
+                                                <SelectItem value="1week">1 Week</SelectItem>
+                                                <SelectItem value="permanent">Permanent</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
 
-                    <div>
-                        <Select
-                            value={expiration}
-                            onValueChange={setExpiration}
-                        >
-                            <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Select expiration" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="1month">1 Month</SelectItem>
-                                <SelectItem value="1week">1 Week</SelectItem>
-                                <SelectItem value="permanent">Permanent</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
+                                    <div>
+                                        <label className="text-sm text-muted-foreground">
+                                            Language
+                                        </label>
+                                        <Select
+                                            value={programmingLanguage}
+                                            onValueChange={setProgrammingLanguage}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="javascript">JavaScript</SelectItem>
+                                                <SelectItem value="python">Python</SelectItem>
+                                                <SelectItem value="java">Java</SelectItem>
+                                                <SelectItem value="go">Go</SelectItem>
+                                                <SelectItem value="rust">Rust</SelectItem>
+                                                <SelectItem value="php">PHP</SelectItem>
+                                                <SelectItem value="ruby">Ruby</SelectItem>
+                                                <SelectItem value="html">HTML</SelectItem>
+                                                <SelectItem value="css">CSS</SelectItem>
+                                                <SelectItem value="text">Plain Text</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
 
-                    <div>
-                        <Select
-                            value={programmingLanguage}
-                            onValueChange={setProgrammingLanguage}
-                        >
-                            <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Select Language" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="javascript">JavaScript</SelectItem>
-                                <SelectItem value="python">Python</SelectItem>
-                                <SelectItem value="java">Java</SelectItem>
-                                <SelectItem value="go">Go</SelectItem>
-                                <SelectItem value="rust">Rust</SelectItem>
-                                <SelectItem value="php">PHP</SelectItem>
-                                <SelectItem value="ruby">Ruby</SelectItem>
-                                <SelectItem value="html">HTML</SelectItem>
-                                <SelectItem value="css">CSS</SelectItem>
-                                <SelectItem value="text">Plain Text</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
+                                    <Button
+                                        onClick={() => setProgrammingLanguage(detectLanguage(content))}
+                                        variant="outline"
+                                        className="w-full"
+                                    >
+                                        Auto-detect Language
+                                    </Button>
+                                </div>
+                            </div>
 
-                    {/* Auto-detect button to detect language */}
-                    <div className="flex justify-start">
-                        <Button
-                            type="button"
-                            onClick={handleAutoDetect}
-                            className="w-full md:w-auto mt-2"
-                        >
-                            Auto-detect Language
-                        </Button>
-                    </div>
-
-                    <div className="flex justify-end space-x-4">
-                        <Button type="submit" disabled={isSubmitting} className="w-full">
-                            {isSubmitting ? 'Submitting...' : 'Submit'}
-                        </Button>
-                    </div>
-
-                    {errorMessage && (
-                        <div className="text-red-500 text-sm">{errorMessage}</div>
-                    )}
-                </form>
-            </Card>
+                            <div className="pt-4 border-t">
+                                <Button
+                                    onClick={handleSubmit}
+                                    disabled={isSubmitting}
+                                    className="w-full"
+                                >
+                                    {isSubmitting ? 'Creating Paste...' : 'Create Paste'}
+                                </Button>
+                            </div>
+                        </div>
+                    </Card>
+                </div>
+            </div>
         </div>
     );
 }
