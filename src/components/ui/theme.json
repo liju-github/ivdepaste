@@ -1,0 +1,86 @@
+[
+    {
+        "name": "Dark",
+        "className": "dark",
+        "primaryColor": "#000000",
+        "secondaryColor1": "#1c1c1c",
+        "secondaryColor2": "#3a3a3a"
+    },
+    {
+        "name": "Serika Dark",
+        "className": "serika-dark",
+        "primaryColor": "#222222",
+        "secondaryColor1": "#444444",
+        "secondaryColor2": "#666666"
+    },
+    {
+        "name": "Botanical",
+        "className": "botanical",
+        "primaryColor": "#0f9d58",
+        "secondaryColor1": "#c0e6d8",
+        "secondaryColor2": "#a0bda3"
+    },
+    {
+        "name": "Carbon",
+        "className": "carbon",
+        "primaryColor": "#4a4a4a",
+        "secondaryColor1": "#8c8c8c",
+        "secondaryColor2": "#b3b3b3"
+    },
+    {
+        "name": "Aurora",
+        "className": "aurora",
+        "primaryColor": "#00c6ff",
+        "secondaryColor1": "#ff00a6",
+        "secondaryColor2": "#fffa00"
+    },
+    {
+        "name": "Nebula",
+        "className": "nebula",
+        "primaryColor": "#6b5b8a",
+        "secondaryColor1": "#f4c2c2",
+        "secondaryColor2": "#d9a5e0"
+    },
+    {
+        "name": "Copper",
+        "className": "copper",
+        "primaryColor": "#b5651d",
+        "secondaryColor1": "#d2854a",
+        "secondaryColor2": "#e1c6a4"
+    },
+    {
+        "name": "Beach Sand",
+        "className": "beach-sand",
+        "primaryColor": "#e0c59a",
+        "secondaryColor1": "#d5a86b",
+        "secondaryColor2": "#c3b09f"
+    },
+    {
+        "name": "Tropical Ocean",
+        "className": "tropical-ocean",
+        "primaryColor": "#0076a8",
+        "secondaryColor1": "#0094b4",
+        "secondaryColor2": "#00c3e0"
+    },
+    {
+        "name": "Sunset Warmth",
+        "className": "sunset-warmth",
+        "primaryColor": "#f39c12",
+        "secondaryColor1": "#e67e22",
+        "secondaryColor2": "#d35400"
+    },
+    {
+        "name": "Miami",
+        "className": "miami",
+        "primaryColor": "#1abc9c",
+        "secondaryColor1": "#16a085",
+        "secondaryColor2": "#2ecc71"
+    },
+    {
+        "name": "Watermelon",
+        "className": "watermelon",
+        "primaryColor": "#ff4d4d",
+        "secondaryColor1": "#ff9999",
+        "secondaryColor2": "#ffcccb"
+    }
+]

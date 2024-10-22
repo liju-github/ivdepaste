@@ -33,8 +33,9 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "prisma/**/*.ts"
-, "src/components/common/Navbar.tsx"  ],
+    "prisma/**/*.ts",
+    "src/components/header/Navbar.tsx"
+  ],
   "exclude": [
     "node_modules"
   ]

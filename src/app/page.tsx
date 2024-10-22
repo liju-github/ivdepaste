@@ -10,10 +10,10 @@ export default function Home() {
         <h1 className="text-3xl font-bold mb-4">welcome to ivdepaste</h1>
         <div className="space-x-4">
           <Button asChild>
-            <Link href="/paste/new">Create New Paste</Link>
+            <Link href="/paste/new">create a new paste</Link>
           </Button>
           <Button variant="outline" asChild>
-            <Link href="/paste/my">My Pastes</Link>
+            <Link href="/paste/my">view my pastes</Link>
           </Button>
         </div>
       </Card>
