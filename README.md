@@ -1,36 +1,222 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ivdepaste - A simple file sharing and code snippet platform built with Next.js.
 
-## Getting Started
+## Project Overview
+ivdepaste lets you easily share files and code snippets. Whether you want to quickly share some code or upload files, it's got you covered.
 
-First, run the development server:
+## Tech Stack
+- **Frontend**: Next.js 14+ with TypeScript
+- **Database**: Supabase (PostgreSQL)
+- **Authentication**: Supabase Auth
+- **ORM**: Prisma
+- **File Storage**: Supabase Storage
+- **Styling**: Tailwind CSS
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Features Roadmap
+
+### Phase 1: Core Infrastructure
+- [x] Project setup with Next.js 14+
+- [x] Supabase integration
+- [x] Prisma setup
+- [x] Basic authentication
+- [ ] File upload system
+- [ ] Core database schema
+
+### Phase 2: File Management
+- [ ] Multi-file upload support
+- [ ] File preview system
+  - Code files
+  - Images
+  - PDFs
+  - Text files
+- [ ] File organization structure
+- [ ] Storage quota management
+- [ ] File sharing mechanisms
+
+### Phase 3: Code Features
+- [ ] Code editor integration
+- [ ] Syntax highlighting
+- [ ] Multiple language support
+- [ ] Code snippet management
+- [ ] Version control integration
+- [ ] Collaborative editing
+
+### Phase 4: User Experience
+- [ ] Customizable dashboard
+- [ ] Dark/Light theme
+- [ ] Search functionality
+- [ ] Tags and categories
+- [ ] Sharing options
+- [ ] File/Code analytics
+
+## Database Schema
+
+```prisma
+// schema.prisma
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  profileImage  String?
+  files         File[]
+  folders       Folder[]
+  codeSnippets  CodeSnippet[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model File {
+  id          String    @id @default(cuid())
+  name        String
+  type        String
+  size        Int
+  url         String
+  folderId    String?
+  userId      String
+  isPublic    Boolean   @default(false)
+  expiresAt   DateTime?
+  user        User      @relation(fields: [userId], references: [id])
+  folder      Folder?   @relation(fields: [folderId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Folder {
+  id          String    @id @default(cuid())
+  name        String
+  userId      String
+  parentId    String?
+  files       File[]
+  user        User      @relation(fields: [userId], references: [id])
+  parent      Folder?   @relation("FolderToFolder", fields: [parentId], references: [id])
+  children    Folder[]  @relation("FolderToFolder")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model CodeSnippet {
+  id          String    @id @default(cuid())
+  title       String
+  content     String
+  language    String
+  userId      String
+  isPublic    Boolean   @default(false)
+  expiresAt   DateTime?
+  user        User      @relation(fields: [userId], references: [id])
+  tags        Tag[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Tag {
+  id           String        @id @default(cuid())
+  name         String
+  codeSnippets CodeSnippet[]
+}
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Project Structure
+```
+src/
+├── app/
+│   ├── (auth)/
+│   │   ├── login/
+│   │   └── register/
+│   ├── dashboard/
+│   ├── files/
+│   └── code/
+├── components/
+│   ├── ui/
+│   ├── files/
+│   ├── code/
+│   └── shared/
+├── lib/
+│   ├── prisma/
+│   ├── supabase/
+│   └── utils/
+├── hooks/
+└── types/
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## API Routes
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```typescript
+// Core Routes
+/api/files
+  - POST /upload
+  - GET /list
+  - GET /:id
+  - DELETE /:id
+  - PATCH /:id/share
 
-## Learn More
+/api/folders
+  - POST /create
+  - GET /list
+  - PATCH /:id
+  - DELETE /:id
 
-To learn more about Next.js, take a look at the following resources:
+/api/code
+  - POST /create
+  - GET /list
+  - GET /:id
+  - PATCH /:id
+  - DELETE /:id
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+/api/search
+  - GET /files
+  - GET /code
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Environment Setup
+```env
+# .env.example
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+DATABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=
+```
 
-## Deploy on Vercel
+## Getting Started
+```bash
+# Clone repository
+git clone [repository-url]
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Install dependencies
+npm install
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Setup environment variables
+cp .env.example .env.local
+
+# Run database migrations
+npx prisma migrate dev
+
+# Start development server
+npm run dev
+```
+
+## Deployment Strategy
+1. **Development**: Vercel Preview Deployments
+2. **Production**: Vercel Production
+3. **Database**: Supabase Project
+4. **Storage**: Supabase Storage
+
+## Security Considerations
+- File type validation
+- Upload size limits
+- Rate limiting
+- Access control
+- File encryption
+- Secure sharing links
+
+## Performance Optimizations
+- Image optimization
+- Lazy loading
+- Incremental Static Regeneration
+- Edge caching
+- Chunked uploads
+
+## Monitoring
+- Supabase Dashboard
+- Vercel Analytics
+- Custom logging system
+
