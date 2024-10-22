@@ -239,7 +239,9 @@ const HomePage: React.FC = () => {
                                     />
                                 </TableCell>
                                 <TableCell>{paste.title}</TableCell>
-                                <TableCell>{paste.content}</TableCell>
+                                <TableCell>
+                                    {paste.content.split(' ').slice(0, 10).join(' ')}{paste.content.split(' ').length > 10 && '...'}
+                                </TableCell>
                                 <TableCell>{format(new Date(paste.createdAt), "PPpp")}</TableCell>
                                 <TableCell>
                                     {paste.expiresAt ? (
@@ -262,7 +264,7 @@ const HomePage: React.FC = () => {
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end">
                                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                            <DropdownMenuItem onClick={() => router.push(`/vie?pasteId=${paste.id}`)}>
+                                            <DropdownMenuItem onClick={() => router.push(`/view?pasteId=${paste.id}`)}>
                                                 View
                                             </DropdownMenuItem>
                                             <DropdownMenuItem onClick={async () => {

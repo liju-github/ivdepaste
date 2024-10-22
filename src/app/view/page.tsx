@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/src/components/ui/button';
 import { Card, CardHeader, CardContent, CardFooter } from '@/src/components/ui/card';
 import { Alert, AlertDescription } from '@/src/components/ui/alert';
@@ -9,12 +9,10 @@ import { Skeleton } from '@/src/components/ui/skeleton';
 import { supabase } from '@/src/lib/supabase';
 import { Paste } from '@/types';
 
-
 interface ErrorState {
     type: 'error' | 'not-found' | 'expired';
     message: string;
 }
-
 
 export default function ViewPaste() {
     const router = useRouter();
@@ -63,7 +61,7 @@ export default function ViewPaste() {
 
                 setPaste(paste as Paste);
             } catch (error) {
-                setError({ type: 'error', message: 'An unexpected error occurred'+error });
+                setError({ type: 'error', message: 'An unexpected error occurred' + error });
             } finally {
                 setIsLoading(false);
             }
@@ -97,13 +95,16 @@ export default function ViewPaste() {
                 <Alert variant="destructive">
                     <AlertDescription>{error.message}</AlertDescription>
                 </Alert>
-                <Button
-                    onClick={() => router.push('/')}
-                    className="mt-4"
-                >
-                    Back to Home
-                </Button>
+                <div className="flex justify-end mt-1">
+                    <Button
+                        onClick={() => router.push('/')}
+                        className="w-1/5"
+                    >
+                        Back to Home
+                    </Button>
+                </div>
             </div>
+
         );
     }
 
@@ -121,27 +122,29 @@ export default function ViewPaste() {
                 </CardHeader>
 
                 <CardContent>
+                    <div className="flex justify-between items-center mb-4">
+                        <div className="flex flex-col">
+                            <p className="text-sm text-muted-foreground">
+                                Created: {new Date(paste.createdAt).toLocaleString()}
+                            </p>
+                            {paste.expiresAt && (
+                                <p className="text-sm text-muted-foreground">
+                                    Expires: {new Date(paste.expiresAt).toLocaleString()}
+                                </p>
+                            )}
+                        </div>
+                        <Button
+                            onClick={() => router.push('/')}
+                            className="w-1/5 ml-auto"
+                        >
+                            Back to Home
+                        </Button>
+                    </div>
                     <pre className="whitespace-pre-wrap break-words bg-muted p-4 rounded-md">
                         <code>{paste.content}</code>
                     </pre>
                 </CardContent>
 
-                <CardFooter className="flex flex-col items-start gap-2">
-                    <p className="text-sm text-muted-foreground">
-                        Created: {new Date(paste.createdAt).toLocaleString()}
-                    </p>
-                    {paste.expiresAt && (
-                        <p className="text-sm text-muted-foreground">
-                            Expires: {new Date(paste.expiresAt).toLocaleString()}
-                        </p>
-                    )}
-                    <Button
-                        onClick={() => router.push('/')}
-                        className="mt-2"
-                    >
-                        Back to Home
-                    </Button>
-                </CardFooter>
             </Card>
         </div>
     );

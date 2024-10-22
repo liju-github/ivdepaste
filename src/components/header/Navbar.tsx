@@ -16,11 +16,10 @@ export const Navbar: React.FC = () => {
     const [theme, setTheme] = useState<string>('');
 
     useEffect(() => {
-        
         const savedTheme = localStorage.getItem('theme') || 'default';
         setTheme(savedTheme);
         document.documentElement.className = savedTheme; 
-    }, []);
+    }, [theme]);
 
     const handleColorChange = (newTheme: string) => {
         setTheme(newTheme); 
@@ -44,7 +43,7 @@ export const Navbar: React.FC = () => {
                 <div className="flex items-center space-x-2">
                     <Select onValueChange={handleColorChange}>
                         <SelectTrigger className="w-[200px]"> {}
-                            <SelectValue placeholder="theme" /> {}
+                            <SelectValue placeholder={theme} /> {}
                         </SelectTrigger>
                         <SelectContent>
                             {themes.map((theme) => (

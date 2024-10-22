@@ -1,0 +1,8 @@
+add form validation while creating paste
+dont allow unauthenticated pastes to be edited or deleted
+click to directly view the page instead of a option select
+find an idea for the blank home page
+expiration cron job 
+view once deletes within 1 min after requesting the pasteId data
+online compiler for js,python,go etc... important
+file upload if possible
