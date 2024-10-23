@@ -3,6 +3,11 @@
 ## Project Overview
 ivdepaste lets you easily share files and code snippets. Whether you want to quickly share some code or upload files, it's got you covered.
 
+## Demo Video
+Here’s a quick demo of ivdepaste current progress:
+
+[Watch the demo video](https://github.com/liju-github/ivdepaste/demo.mp4)
+
 ## Tech Stack
 - **Frontend**: Next.js 14+ with TypeScript
 - **Database**: Supabase (PostgreSQL)
@@ -74,4 +79,5 @@ ivdepaste lets you easily share files and code snippets. Whether you want to qui
 - Supabase Dashboard
 - Vercel Analytics
 - Custom logging system
+
 
