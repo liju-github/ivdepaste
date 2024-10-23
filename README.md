@@ -6,7 +6,7 @@ ivdepaste lets you easily share files and code snippets. Whether you want to qui
 ## Demo Video
 Here’s a quick demo of ivdepaste current progress:
 
-[Watch the demo video](https://github.com/liju-github/ivdepaste/demo.mp4)
+[Watch the demo video]([https://github.com/liju-github/ivdepaste/demo.mp4](https://youtu.be/axjPcAELuGw))
 
 ## Tech Stack
 - **Frontend**: Next.js 14+ with TypeScript
