@@ -10,9 +10,9 @@ Here’s a quick demo of ivdepaste current progress:
 
 ## Tech Stack
 - **Frontend**: Next.js 14+ with TypeScript
-- **Database**: Supabase (PostgreSQL)
+- **Database**: Supabase (PostgreSQL) I'll rewrite the backend completely on golang with flexible json database like mongodb  next week, postgres feels so rigid for a application like this.
 - **Authentication**: Supabase Auth
-- **ORM**: Prisma
+- **ORM**: Prisma (changing to Golang ODM for MongoDB)
 - **File Storage**: Supabase Storage
 - **Styling**: Tailwind CSS
 
