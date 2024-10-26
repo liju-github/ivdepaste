@@ -8,7 +8,6 @@ import { Alert, AlertDescription } from '@/src/components/ui/alert';
 import { Slider } from "@/src/components/ui/slider";
 import { Skeleton } from '@/src/components/ui/skeleton';
 import { supabase } from '@/src/lib/supabase';
-import { Sheet, SheetTrigger, SheetContent } from '@/src/components/ui/sheet';
 import { FiSettings } from 'react-icons/fi';
 
 interface Paste {
@@ -36,6 +35,16 @@ const FormattedDate = ({ date }: { date: string }) => {
     return <span>{formattedDate}</span>;
 };
 
+const fontFamilies = [
+    'Arial, sans-serif',
+    'Courier New, monospace',
+    'Georgia, serif',
+    'Times New Roman, serif',
+    'Verdana, sans-serif',
+    'Roboto, sans-serif',
+    'Montserrat, sans-serif'
+];
+
 export default function ViewPaste() {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -45,10 +54,11 @@ export default function ViewPaste() {
     const [error, setError] = useState<ErrorState | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isMounted, setIsMounted] = useState(false);
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false); 
 
     const [fontSize, setFontSize] = useState<number>(16);
-    const [fontFamily, setFontFamily] = useState<string>('Arial');
-    const [fontColor, setFontColor] = useState<string>('#000000');
+    const [fontFamily, setFontFamily] = useState<string>('');
+    const [fontColor, setFontColor] = useState<string>('');
 
     useEffect(() => {
         setIsMounted(true);
@@ -147,7 +157,7 @@ export default function ViewPaste() {
 
     // Render the Paste Content
     return (
-        <div className="container mx-auto p-4">
+        <div className="container mx-auto p-4"  >
             <Card>
                 <CardHeader>
                     <h1 className="text-3xl font-bold">{paste.title}</h1>
@@ -177,7 +187,9 @@ export default function ViewPaste() {
                         className="whitespace-pre-wrap break-words bg-muted p-4 rounded-md"
                         style={{
                             fontSize: `${fontSize}px`,
-                            fontFamily: fontFamily,
+                            fontLanguageOverride: "normal",
+                            MozFontFeatureSettings:"normal",
+                            fontStyle: "italic",
                             color: fontColor,
                         }}
                     >
@@ -187,57 +199,75 @@ export default function ViewPaste() {
             </Card>
 
             {/* Settings Icon */}
-            <Sheet>
-                <SheetTrigger asChild>
-                    <div
-                        className="fixed bottom-8 right-8 bg-gray-200 p-2 rounded-full cursor-pointer shadow-lg"
-                    >
-                        <FiSettings size={24} />
-                    </div>
-                </SheetTrigger>
-                <SheetContent side="right" className="p-4">
-                    <h2 className="text-xl font-semibold mb-4">Font Settings</h2>
+            <div className="fixed bottom-8 right-8 bg-gray-200 p-2 rounded-full cursor-pointer shadow-lg" onClick={() => setIsSettingsOpen(!isSettingsOpen)}>
+                <FiSettings size={24} />
+            </div>
 
-                    {/* Font Size Control */}
-                    <div className="mb-4">
-                        <label className="block mb-2 font-medium">Font Size:</label>
-                        <Slider
-                            defaultValue={[fontSize]}
-                            min={10}
-                            max={40}
-                            step={1}
-                            onValueChange={(value) => setFontSize(value[0])}
-                        />
-                    </div>
+            {/* Settings Card */}
+            {isSettingsOpen && (
+                <Card className="fixed bottom-16 right-8 p-4 rounded-lg shadow-lg z-50">
+                    <CardHeader>
+                        <h2 className="text-xl font-semibold">Font Settings</h2>
+                        
+                    </CardHeader>
+                    <CardContent>
+                        {/* Font Size Control */}
+                        <div className="mb-4">
+                            <label className="block mb-2 font-medium">Font Size:</label>
+                            <Slider
+                                defaultValue={[fontSize]}
+                                min={10}
+                                max={40}
+                                step={1}
+                                onValueChange={(value) => setFontSize(value[0])}
+                            />
+                        </div>
 
-                    {/* Font Family Control */}
-                    <div className="mb-4">
-                        <label className="block mb-2 font-medium">Font Family:</label>
-                        <select
-                            value={fontFamily}
-                            onChange={(e) => setFontFamily(e.target.value)}
-                            className="border rounded p-2 w-full"
-                        >
-                            <option value="Arial">Arial</option>
-                            <option value="Courier New">Courier New</option>
-                            <option value="Georgia">Georgia</option>
-                            <option value="Times New Roman">Times New Roman</option>
-                            <option value="Verdana">Verdana</option>
-                        </select>
-                    </div>
+                        {/* Font Family Control */}
+                        <div className="mb-4">
+                            <label className="block mb-2 font-medium">Font Family:</label>
+                            <select
+                                value={fontFamily}
+                                onChange={(e) => setFontFamily(e.target.value)}
+                                className="border rounded p-2 w-full"
+                            >
+                                {fontFamilies.map((font) => (
+                                    <option key={font} value={font}>{font}</option>
+                                ))}
+                            </select>
+                        </div>
 
-                    {/* Font Color Control */}
-                    <div className="mb-4">
-                        <label className="block mb-2 font-medium">Font Color:</label>
-                        <input
-                            type="color"
-                            value={fontColor}
-                            onChange={(e) => setFontColor(e.target.value)}
-                            className="w-16 h-8 p-0 border rounded"
-                        />
-                    </div>
-                </SheetContent>
-            </Sheet>
+                        {/* Font Color Control */}
+                        <div className="mb-4">
+                            <label className="block mb-2 font-medium">Font Color:</label>
+                            <input
+                                type="color"
+                                value={fontColor}
+                                onChange={(e) => setFontColor(e.target.value)}
+                                className="w-16 h-8 p-0 border rounded"
+                            />
+                        </div>
+
+                        {/* Reset and Close Buttons */}
+                        <div className="flex justify-between">
+                            <Button
+                                onClick={() => {
+                                    setFontSize(16);
+                                    setFontFamily('');
+                                    setFontColor('');
+                                }}
+                                className="bg-gray-300"
+                            >
+                                Reset
+                            </Button>
+                            <Button onClick={() => setIsSettingsOpen(false)}>
+                                Close
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
         </div>
     );
 }

@@ -1,3 +1,8 @@
+##PriorityGrade 1 :
+-Fix the view setting make the card better
+-major ui/ux changes in the viewer page.
+-assign 3hr tmrw
+
 add form validation while creating paste
 dont allow unauthenticated pastes to be edited or deleted
 click to directly view the page instead of a option select
