@@ -1,8 +1,7 @@
 'use client';
 
 import { ThemeProvider } from "@/src/components/ui/theme-provider";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+
 
 export function ThemeWrapper({ children }: { children: React.ReactNode }) {
 
@@ -25,6 +24,7 @@ export function ThemeWrapper({ children }: { children: React.ReactNode }) {
                 "watermelon"
             ]
 }
+            defaultTheme="system"
             enableSystem
             disableTransitionOnChange
         >

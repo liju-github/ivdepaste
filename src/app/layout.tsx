@@ -1,16 +1,14 @@
 import { AuthProvider } from "../providers/auth-provider";
 import { ThemeProvider } from "../components/ui/theme-provider";
-import { Navbar } from "@/src/components/header/Navbar"
-import "./globals.css"
+import { Navbar } from "@/src/components/header/Navbar";
+import "./globals.css";
 import { Toaster } from "@/src/components/ui/toaster";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
         <AuthProvider>
-          
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -19,8 +17,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           >
             <Navbar />
             <main>{children}</main>
+            <Toaster />
           </ThemeProvider>
-          <Toaster />
         </AuthProvider>
       </body>
     </html>
