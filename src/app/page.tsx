@@ -3,16 +3,9 @@
 import { Button } from "@/src/components/ui/button";
 import { Card } from "@/src/components/ui/card";
 import Link from "next/link";
-import { useRouter } from 'next/navigation';
-import { useEffect } from "react";
+
 
 export default function Home() {
-  const router = useRouter();
-
-  useEffect(() => {
-    router.prefetch('/paste/new');
-    router.prefetch('/paste/my');
-  }, [router]);
 
   return (
     <main className="container mx-auto p-4">

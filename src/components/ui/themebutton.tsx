@@ -11,70 +11,63 @@ import {
 import themes from '@/src/components/ui/theme.json';
 
 export const ThemeButton: React.FC = () => {
-    const [themeIndex, setThemeIndex] = useState<number>(0);
-    const [currentThemeColors, setCurrentThemeColors] = useState<any>(null);
+    
+    const [currentTheme, setCurrentTheme] = useState<string>('dark'); 
 
+    
     useEffect(() => {
-        const savedTheme = localStorage.getItem('theme') || themes[themeIndex].className;
-        setThemeIndex(themes.findIndex(t => t.className === savedTheme));
-        document.documentElement.className = savedTheme;
-
-        const themeData = themes[themeIndex];
-        if (themeData) {
-            setCurrentThemeColors(themeData);
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            setCurrentTheme(savedTheme);
+            document.documentElement.className = savedTheme; 
         }
     }, []);
 
+    
     const handleColorChange = (newTheme: string) => {
         localStorage.setItem('theme', newTheme);
-        document.documentElement.className = newTheme;
-
-        const themeData = themes.find((t) => t.className === newTheme);
-        if (themeData) {
-            setCurrentThemeColors(themeData);
-        }
+        setCurrentTheme(newTheme);
+        document.documentElement.className = newTheme; 
     };
 
+    
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.shiftKey && event.key === 'W') {
-                const nextIndex = (themeIndex + 1) % themes.length;
-                setThemeIndex(nextIndex);
+                const currentIndex = themes.findIndex(t => t.className === currentTheme);
+                const nextIndex = (currentIndex + 1) % themes.length;
                 handleColorChange(themes[nextIndex].className);
             }
         };
 
         window.addEventListener('keydown', handleKeyDown);
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-        };
-    }, [themeIndex]); 
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [currentTheme]);
+
+    
+    const currentThemeColors = themes.find(t => t.className === currentTheme) || themes[0];
 
     return (
         <div style={{ position: 'absolute', bottom: '20px', right: '20px' }}>
-            <Select onValueChange={handleColorChange} value={currentThemeColors?.className}>
+            <Select onValueChange={handleColorChange} value={currentThemeColors.className}>
                 <SelectTrigger className="w-[200px]">
-                    {currentThemeColors ? (
-                        <div className="flex items-center">
+                    <div className="flex items-center">
+                        <div
+                            className="w-4 h-4 rounded-full mr-2"
+                            style={{ backgroundColor: currentThemeColors.primaryColor }}
+                        />
+                        <span>{currentThemeColors.name}</span>
+                        <div className="flex ml-2">
                             <div
-                                className="w-4 h-4 rounded-full mr-2"
-                                style={{ backgroundColor: currentThemeColors.primaryColor }}
+                                className="w-3 h-3 rounded-full"
+                                style={{ backgroundColor: currentThemeColors.secondaryColor1 }}
                             />
-                            <span>{currentThemeColors.name}</span>
-                            <div className="flex ml-2">
-                                <div
-                                    className="w-3 h-3 rounded-full"
-                                    style={{ backgroundColor: currentThemeColors.secondaryColor1 }}
-                                />
-                                <div
-                                    className="w-3 h-3 rounded-full ml-1"
-                                    style={{ backgroundColor: currentThemeColors.secondaryColor2 }}
-                                />
-                            </div>
+                            <div
+                                className="w-3 h-3 rounded-full ml-1"
+                                style={{ backgroundColor: currentThemeColors.secondaryColor2 }}
+                            />
                         </div>
-                    ) : (
-                        <SelectValue placeholder="Select theme" />
-                    )}
+                    </div>
                 </SelectTrigger>
                 <SelectContent>
                     {themes.map((theme) => (
@@ -85,16 +78,16 @@ export const ThemeButton: React.FC = () => {
                                     style={{ backgroundColor: theme.primaryColor }}
                                 />
                                 <span>{theme.name}</span>
-                            </div>
-                            <div className="flex ml-2">
-                                <div
-                                    className="w-3 h-3 rounded-full"
-                                    style={{ backgroundColor: theme.secondaryColor1 }}
-                                />
-                                <div
-                                    className="w-3 h-3 rounded-full ml-1"
-                                    style={{ backgroundColor: theme.secondaryColor2 }}
-                                />
+                                <div className="flex ml-2">
+                                    <div
+                                        className="w-3 h-3 rounded-full"
+                                        style={{ backgroundColor: theme.secondaryColor1 }}
+                                    />
+                                    <div
+                                        className="w-3 h-3 rounded-full ml-1"
+                                        style={{ backgroundColor: theme.secondaryColor2 }}
+                                    />
+                                </div>
                             </div>
                         </SelectItem>
                     ))}

@@ -1,0 +1,1 @@
+tried to use redux to store current theme even after a reload,but forgot about redux reseting during a reloaded... Ooops !!! 
