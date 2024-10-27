@@ -7,6 +7,7 @@ import { Alert, AlertDescription } from "@/src/components/ui/alert";
 import { useState } from "react";
 import "@/src/app/globals.css"
 import defaultimage from "./default.jpg";
+import Image from "next/image";
 
 export function AuthButton() {
     const { user, error, signInWithGoogle, signOut } = useAuth();
@@ -41,10 +42,12 @@ export function AuthButton() {
         <div className="flex items-center gap-4">
             {user ? (
                 <div className="flex items-center gap-4">
-                    <img
+                    <Image
                         src={user.user_metadata.avatar_url || defaultimage}
                         alt="Profile"
                         className="w-8 h-8 rounded-full"
+                        width={32} 
+                        height={32} 
                     />
                     <div className="flex flex-col">
                         <span className="text-primary font-medium">
@@ -67,7 +70,7 @@ export function AuthButton() {
                 <Button
                     onClick={handleSignIn}
                     disabled={isButtonLoading}
-                    className="bg-primary text-primary-foreground hover:bg-primary-foreground hover:text-primary flex items-center gap-2"
+                    className="bg-primary text-primary-foreground hover:bg-primary-foreground hover:text-primary-foreground flex items-center gap-2"
                 >
                     {isButtonLoading ? (
                         <>

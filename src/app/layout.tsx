@@ -3,6 +3,7 @@ import { Navbar } from "@/src/components/header/Navbar";
 import "./globals.css";
 import { Toaster } from "@/src/components/ui/toaster";
 import { ThemeWrapper } from "../components/ui/theme";
+import ThemeButton from "../components/ui/themebutton";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -11,6 +12,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeWrapper>
           <AuthProvider>
             <Navbar />
+            <ThemeButton />
             <main>{children}</main>
             <Toaster />
           </AuthProvider>

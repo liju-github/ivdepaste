@@ -7,6 +7,13 @@
         "secondaryColor2": "#3a3a3a"
     },
     {
+        "name": "Light",
+        "className": "light",
+        "primaryColor": "#ffffff", 
+        "secondaryColor1": "#000000", 
+        "secondaryColor2": "#000000" 
+    },
+    {
         "name": "Serika Dark",
         "className": "serika-dark",
         "primaryColor": "#222222",

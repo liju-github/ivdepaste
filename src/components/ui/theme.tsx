@@ -35,7 +35,7 @@ export function ThemeWrapper({ children }: { children: React.ReactNode }) {
                 "watermelon"
             ]}
             disableTransitionOnChange
-            // enableColorScheme={true}
+            enableColorScheme={true}
         >
             {children}
         </ThemeProvider>
