@@ -16,22 +16,77 @@ import {
     TableRow,
 } from "@/src/components/ui/table";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuTrigger,
-} from "@/src/components/ui/dropdown-menu";
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/src/components/ui/dialog";
 import { Checkbox } from "@/src/components/ui/checkbox";
 import { Alert, AlertDescription } from '@/src/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
-import { MoreVertical, Trash2 } from "lucide-react";
+import { Eye, Pencil, Share2, Trash2, Check, Copy } from "lucide-react";
 import { format, subMinutes, subHours, subDays, subWeeks, subMonths, subYears } from "date-fns";
+import { toast } from 'sonner';
 
 interface DateOption {
     label: string;
     value: Date;
 }
+
+interface ShareModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    pasteId: string;
+}
+
+// Moved ShareModal outside of HomePage
+const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, pasteId }) => {
+    const [copied, setCopied] = useState(false);
+    // Check if window is defined (client-side)
+    const shareUrl = typeof window !== 'undefined'
+        ? `${window.location.origin}/view?pasteId=${pasteId}`
+        : '';
+
+    const handleCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(shareUrl);
+            setCopied(true);
+            toast.success('Link copied to clipboard!');
+            setTimeout(() => setCopied(false), 2000);
+        } catch (err) {
+            toast.error('Failed to copy link');
+        }
+    };
+
+    return (
+        <Dialog open={isOpen} onOpenChange={onClose}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Share Paste</DialogTitle>
+                    <DialogDescription>
+                        Anyone with this link can view your paste
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="flex items-center space-x-2 mt-4">
+                    <Input
+                        readOnly
+                        value={shareUrl}
+                        className="flex-1"
+                    />
+                    <Button
+                        onClick={handleCopy}
+                        variant="outline"
+                        className="flex items-center gap-2"
+                    >
+                        {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                        {copied ? 'Copied!' : 'Copy'}
+                    </Button>
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
+};
 
 const dateOptions: DateOption[] = [
     { label: "Last 30 Minutes", value: subMinutes(new Date(), 30) },
@@ -47,7 +102,6 @@ const dateOptions: DateOption[] = [
     { label: "Everything", value: subYears(new Date(), 10) },
 ];
 
-// Separate component for dynamic content to prevent hydration mismatch
 const FormattedDate: React.FC<{ date: string }> = ({ date }) => {
     const [mounted, setMounted] = useState(false);
 
@@ -96,8 +150,9 @@ const HomePage: React.FC = () => {
     const [searchTitle, setSearchTitle] = useState<string>('');
     const [searchContent, setSearchContent] = useState<string>('');
     const [selectedDateRange, setSelectedDateRange] = useState<string | null>(null);
+    const [shareModalOpen, setShareModalOpen] = useState(false);
+    const [selectedPasteId, setSelectedPasteId] = useState<string>('');
 
-    // Handle client-side initialization
     useEffect(() => {
         setIsClient(true);
     }, []);
@@ -123,12 +178,13 @@ const HomePage: React.FC = () => {
 
             setPastes(prev => prev.filter(paste => !selectedIds.includes(paste.id)));
             setRowSelection({});
+            toast.success('Selected pastes deleted successfully');
         } catch (err) {
             setError('Failed to delete pastes: ' + (err instanceof Error ? err.message : String(err)));
+            toast.error('Failed to delete pastes');
         }
     };
 
-    // Fetch pastes only after authentication is ready
     useEffect(() => {
         const fetchPastes = async () => {
             if (authLoading) return;
@@ -154,6 +210,7 @@ const HomePage: React.FC = () => {
                 setPastes(data || []);
             } catch (err) {
                 setError('Failed to fetch pastes: ' + (err instanceof Error ? err.message : String(err)));
+                toast.error('Failed to fetch pastes');
             } finally {
                 setLoading(false);
             }
@@ -180,9 +237,16 @@ const HomePage: React.FC = () => {
             }
 
             setPastes(prev => prev.filter(p => p.id !== pasteId));
+            toast.success('Paste deleted successfully');
         } catch (err) {
             setError('Failed to delete paste: ' + (err instanceof Error ? err.message : String(err)));
+            toast.error('Failed to delete paste');
         }
+    };
+
+    const handleShare = (pasteId: string) => {
+        setSelectedPasteId(pasteId);
+        setShareModalOpen(true);
     };
 
     const filteredPastes = pastes.filter(paste => {
@@ -212,7 +276,6 @@ const HomePage: React.FC = () => {
         <div className="container mx-auto p-4">
             <h1 className="text-3xl font-bold mb-4 text-center">Your Pastes</h1>
 
-            {/* Search and Filters */}
             <div className="flex flex-col md:flex-row items-center py-4 gap-4">
                 <Input
                     placeholder="Filter titles..."
@@ -264,7 +327,6 @@ const HomePage: React.FC = () => {
                 </Alert>
             )}
 
-            {/* Table */}
             <div className="rounded-md border overflow-x-auto">
                 <Table className="min-w-full">
                     <TableHeader>
@@ -290,7 +352,7 @@ const HomePage: React.FC = () => {
                             <TableHead>Content</TableHead>
                             <TableHead>Created At</TableHead>
                             <TableHead>Expiration Status</TableHead>
-                            <TableHead className="w-[100px]">Actions</TableHead>
+                            <TableHead className="w-[180px]">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -319,26 +381,41 @@ const HomePage: React.FC = () => {
                                     <ExpirationStatus expiresAt={paste.expiresAt} />
                                 </TableCell>
                                 <TableCell>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" className="w-8 h-8 p-0">
-                                                <span className="sr-only">Open menu</span>
-                                                <MoreVertical className="h-4 w-4" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                            <DropdownMenuItem onClick={() => router.push(`/view?pasteId=${paste.id}`)}>
-                                                View
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem
-                                                onClick={() => handleDeletePaste(paste.id)}
-                                                className="text-red-600"
-                                            >
-                                                Delete
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
+                                    <div className="flex items-center gap-2">
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => router.push(`/view?pasteId=${paste.id}`)}
+                                            title="View"
+                                        >
+                                            <Eye className="h-4 w-4" />
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => router.push(`/edit?pasteId=${paste.id}`)}
+                                            title="Edit"
+                                        >
+                                            <Pencil className="h-4 w-4" />
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => handleShare(paste.id)}
+                                            title="Share"
+                                        >
+                                            <Share2 className="h-4 w-4" />
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => handleDeletePaste(paste.id)}
+                                            className="text-red-600 hover:text-red-700"
+                                            title="Delete"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    </div>
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -352,6 +429,12 @@ const HomePage: React.FC = () => {
                     </TableBody>
                 </Table>
             </div>
+
+            <ShareModal
+                isOpen={shareModalOpen}
+                onClose={() => setShareModalOpen(false)}
+                pasteId={selectedPasteId}
+            />
         </div>
     );
 };

@@ -1,14 +1,25 @@
 'use client';
 
-import { ThemeProvider } from "@/src/components/ui/theme-provider";
-
+import { ThemeProvider } from "next-themes";
+import { useEffect, useState } from "react";
 
 export function ThemeWrapper({ children }: { children: React.ReactNode }) {
+    const [isMounted, setIsMounted] = useState(false);
 
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    if (!isMounted) {
+        return null;
+    }
 
     return (
         <ThemeProvider
             attribute="class"
+            defaultTheme="darky"
+            storageKey="theme"  
+            enableSystem
             themes={[
                 "dark",
                 "serika-dark",
@@ -22,11 +33,9 @@ export function ThemeWrapper({ children }: { children: React.ReactNode }) {
                 "sunset-warmth",
                 "miami",
                 "watermelon"
-            ]
-}
-            defaultTheme="system"
-            enableSystem
+            ]}
             disableTransitionOnChange
+            // enableColorScheme={true}
         >
             {children}
         </ThemeProvider>

@@ -1,25 +1,20 @@
 import { AuthProvider } from "../providers/auth-provider";
-import { ThemeProvider } from "../components/ui/theme-provider";
 import { Navbar } from "@/src/components/header/Navbar";
 import "./globals.css";
 import { Toaster } from "@/src/components/ui/toaster";
+import { ThemeWrapper } from "../components/ui/theme";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body>
-        <AuthProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
+    <html lang="en" >
+      <body >
+        <ThemeWrapper>
+          <AuthProvider>
             <Navbar />
             <main>{children}</main>
             <Toaster />
-          </ThemeProvider>
-        </AuthProvider>
+          </AuthProvider>
+        </ThemeWrapper>
       </body>
     </html>
   );
