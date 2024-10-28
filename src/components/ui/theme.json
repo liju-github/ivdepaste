@@ -37,9 +37,9 @@
     {
         "name": "Aurora",
         "className": "aurora",
-        "primaryColor": "#00c6ff",
-        "secondaryColor1": "#ff00a6",
-        "secondaryColor2": "#fffa00"
+        "primaryColor": "#0073e6",
+        "secondaryColor1": "#001f3f", 
+        "secondaryColor2": "#99d6ff"
     },
     {
         "name": "Nebula",
@@ -79,15 +79,15 @@
     {
         "name": "Miami",
         "className": "miami",
-        "primaryColor": "#1abc9c",
-        "secondaryColor1": "#16a085",
-        "secondaryColor2": "#2ecc71"
+        "primaryColor": "#8a2be2",
+        "secondaryColor1": "#7d00ff", 
+        "secondaryColor2": "#ff00ff"
     },
     {
         "name": "Watermelon",
         "className": "watermelon",
         "primaryColor": "#ff4d4d",
         "secondaryColor1": "#ff9999",
-        "secondaryColor2": "#ffcccb"
+        "secondaryColor2": "#39ff14"
     }
 ]

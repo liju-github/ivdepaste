@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { ThemeProvider } from "next-themes";
 
-
 const AVAILABLE_THEMES = [
     "dark",
     "serika-dark",
@@ -18,9 +17,7 @@ const AVAILABLE_THEMES = [
     "watermelon"
 ] as const;
 
-
 type AvailableTheme = typeof AVAILABLE_THEMES[number];
-
 
 const THEMES_MAP = AVAILABLE_THEMES.reduce((acc, theme) => ({
     ...acc,
@@ -28,7 +25,6 @@ const THEMES_MAP = AVAILABLE_THEMES.reduce((acc, theme) => ({
 }), {} as Record<AvailableTheme, string>);
 
 function ThemeContent({ children }: { children: React.ReactNode }) {
-    
     const [currentTheme, setCurrentTheme] = useState<AvailableTheme | "dark">("dark");
 
     useEffect(() => {
@@ -37,13 +33,11 @@ function ThemeContent({ children }: { children: React.ReactNode }) {
         if (savedTheme && AVAILABLE_THEMES.includes(savedTheme)) {
             setCurrentTheme(savedTheme);
         } else {
-
             localStorage.setItem('theme', "dark");
             setCurrentTheme("dark");
         }
     }, []);
 
-    
     useEffect(() => {
         localStorage.setItem('theme', currentTheme);
     }, [currentTheme]);
@@ -65,25 +59,24 @@ function ThemeContent({ children }: { children: React.ReactNode }) {
 
 export function ThemeWrapper({ children }: { children: React.ReactNode }) {
     const [mounted, setMounted] = useState(false);
+    const [fallbackTheme, setFallbackTheme] = useState('dark');
 
-    
     useEffect(() => {
         setMounted(true);
+        // Only access localStorage after component is mounted (client-side)
+        const savedTheme = localStorage.getItem('theme') || 'watermelon';
+        setFallbackTheme(savedTheme);
     }, []);
 
-    
     if (!mounted) {
-        
-        const baseClassName = localStorage.getItem('theme') || 'watermelon';
         return (
-            <div className={`${baseClassName} h-full`}>
-                <div className="contents" >
+            <div className={`${fallbackTheme} h-full`}>
+                <div className="contents">
                     {children}
                 </div>
             </div>
         );
     }
 
-    
     return <ThemeContent>{children}</ThemeContent>;
 }

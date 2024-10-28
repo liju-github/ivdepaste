@@ -5,7 +5,7 @@ import { useAuth } from "@/src/providers/auth-provider";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/src/components/ui/alert";
 import { useState } from "react";
-import "@/src/app/globals.css"
+import "@/src/app/globals.css";
 import defaultimage from "./default.jpg";
 import Image from "next/image";
 
@@ -39,17 +39,18 @@ export function AuthButton() {
     }
 
     return (
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 flex-wrap">
             {user ? (
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 flex-wrap">
                     <Image
                         src={user.user_metadata.avatar_url || defaultimage}
                         alt="Profile"
                         className="w-8 h-8 rounded-full"
-                        width={32} 
-                        height={32} 
+                        width={40}
+                        height={40}
                     />
-                    <div className="flex flex-col">
+                    {/* Conditionally render name based on screen size */}
+                    <div className="hidden md:flex flex-col">
                         <span className="text-primary font-medium">
                             {user.user_metadata.full_name}
                         </span>

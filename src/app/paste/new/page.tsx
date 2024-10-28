@@ -25,9 +25,24 @@ interface PasteStats {
     lineCount: number;
 }
 
-type ExpirationOption = '1month' | '1week' | 'permanent';
+const EXPIRATION_OPTIONS = {
+    '5 Minutes': '5m',
+    '15 Minutes': '15m',
+    '30 Minutes': '30m',
+    '1 Hour': '1h',
+    '6 Hours': '6h',
+    '12 Hours': '12h',
+    '1 Day': '1d',
+    '3 Days': '3d',
+    '1 Week': '1w',
+    '1 Month': '1mo',
+    'Permanent': 'permanent'
+} as const;
+
+type ExpirationOption = typeof EXPIRATION_OPTIONS[keyof typeof EXPIRATION_OPTIONS];
 
 const SUPPORTED_LANGUAGES = {
+    text: 'Plain Text',
     javascript: 'JavaScript',
     python: 'Python',
     java: 'Java',
@@ -37,28 +52,32 @@ const SUPPORTED_LANGUAGES = {
     ruby: 'Ruby',
     html: 'HTML',
     css: 'CSS',
-    text: 'Plain Text'
 } as const;
 
 type ProgrammingLanguage = keyof typeof SUPPORTED_LANGUAGES;
 
-const EXPIRATION_MAP: Record<ExpirationOption, string | null> = {
-    '1month': new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-    '1week': new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-    'permanent': null
+const getExpirationDate = (option: ExpirationOption): string | null => {
+    if (option === 'permanent') return null;
+
+    const timeMap: Record<string, number> = {
+        'm': 60 * 1000,
+        'h': 60 * 60 * 1000,
+        'd': 24 * 60 * 60 * 1000,
+        'w': 7 * 24 * 60 * 60 * 1000,
+        'mo': 30 * 24 * 60 * 60 * 1000,
+    };
+
+    const value = parseInt(option);
+    const unit = option.replace(/[0-9]/g, '');
+    const milliseconds = value * timeMap[unit];
+
+    return new Date(Date.now() + milliseconds).toISOString();
 };
 
-// Component to handle client-side stats rendering
 const StatsDisplay: React.FC<{ stats: PasteStats }> = ({ stats }) => {
-    const [isClient, setIsClient] = useState(false);
-
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
-
-    if (!isClient) {
-        return null;
-    }
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => setMounted(true), []);
+    if (!mounted) return null;
 
     return (
         <div className="flex justify-between text-sm text-muted-foreground">
@@ -71,39 +90,53 @@ const StatsDisplay: React.FC<{ stats: PasteStats }> = ({ stats }) => {
 
 export default function NewPaste() {
     const router = useRouter();
-    const [isClient, setIsClient] = useState(false);
     const { toast } = useToast();
+    const [mounted, setMounted] = useState(false);
 
     const [formState, setFormState] = useState({
         title: '',
         content: '',
-        expiration: '1month' as ExpirationOption,
+        expiration: '1mo' as ExpirationOption,
         programmingLanguage: 'text' as ProgrammingLanguage
     });
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
+    useEffect(() => setMounted(true), []);
 
     const stats = useMemo(() => {
-        if (!formState.content) {
-            return { wordCount: 0, charCount: 0, lineCount: 0 };
-        }
-
-        const charCount = formState.content.length;
-        const words = formState.content.trim().split(/\s+/).filter(word => word.length > 0);
-        const lines = formState.content.split('\n');
-        const lineCount = formState.content.endsWith('\n') ? lines.length - 1 : lines.length;
+        if (!formState.content) return { wordCount: 0, charCount: 0, lineCount: 0 };
 
         return {
-            wordCount: words.length,
-            charCount,
-            lineCount
+            charCount: formState.content.length,
+            wordCount: formState.content.trim().split(/\s+/).filter(Boolean).length,
+            lineCount: formState.content.split('\n').length - (formState.content.endsWith('\n') ? 1 : 0)
         };
     }, [formState.content]);
+
+    const detectLanguage = (text: string): ProgrammingLanguage => {
+        const patterns: Record<ProgrammingLanguage, RegExp> = {
+            javascript: /(function|const|let|var|=>)/,
+            python: /(def|print|import.*from|class.*:)/,
+            java: /(public class|private|protected|package)/,
+            go: /(func|package|import|defer)/,
+            php: /(<\?php|\$[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)/,
+            ruby: /(def|class|require|gem|attr_)/,
+            html: /(<html|<div|<body|<head|<!DOCTYPE)/i,
+            css: /(@media|@import|{.*}|[a-z-]+\s*:)/,
+            rust: /(fn|let mut|impl|struct|enum)/,
+            text: /./
+        };
+
+        for (const [lang, pattern] of Object.entries(patterns)) {
+            if (pattern.test(text) && lang !== 'text') {
+                return lang as ProgrammingLanguage;
+            }
+        }
+
+        return 'text';
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -124,8 +157,6 @@ export default function NewPaste() {
             if (userError) throw userError;
 
             const userId = sessionData?.session?.user?.id;
-            const expiresAt = EXPIRATION_MAP[formState.expiration];
-
             const pasteData: Paste = {
                 id: uuidv4(),
                 title: formState.title || 'Untitled',
@@ -133,7 +164,7 @@ export default function NewPaste() {
                 userId: userId || "",
                 burn: false,
                 createdAt: new Date().toISOString(),
-                expiresAt,
+                expiresAt: getExpirationDate(formState.expiration),
                 localLanguage: 'text',
                 programmingLanguage: formState.programmingLanguage,
             };
@@ -173,44 +204,7 @@ export default function NewPaste() {
         }
     };
 
-    const detectLanguage = (text: string): ProgrammingLanguage => {
-        const patterns: Record<ProgrammingLanguage, RegExp> = {
-            javascript: /(function|const|let|var|=>)/,
-            python: /(def|print|import.*from|class.*:)/,
-            java: /(public class|private|protected|package)/,
-            go: /(func|package|import|defer)/,
-            php: /(<\?php|\$[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)/,
-            ruby: /(def|class|require|gem|attr_)/,
-            html: /(<html|<div|<body|<head|<!DOCTYPE)/i,
-            css: /(@media|@import|{.*}|[a-z-]+\s*:)/,
-            rust: /(fn|let mut|impl|struct|enum)/,
-            text: /./
-        };
-
-        for (const [lang, pattern] of Object.entries(patterns)) {
-            if (pattern.test(text) && lang !== 'text') {
-                return lang as ProgrammingLanguage;
-            }
-        }
-
-        return 'text';
-    };
-
-    const handleAutoDetect = () => {
-        const detectedLanguage = detectLanguage(formState.content);
-        setFormState(prev => ({
-            ...prev,
-            programmingLanguage: detectedLanguage
-        }));
-        toast({
-            title: 'Language Detected',
-            description: `Detected language: ${SUPPORTED_LANGUAGES[detectedLanguage]}`,
-        });
-    };
-
-    if (!isClient) {
-        return null;
-    }
+    if (!mounted) return null;
 
     return (
         <div className="container mx-auto p-4">
@@ -256,9 +250,11 @@ export default function NewPaste() {
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="1month">1 Month</SelectItem>
-                                                <SelectItem value="1week">1 Week</SelectItem>
-                                                <SelectItem value="permanent">Permanent</SelectItem>
+                                                {Object.entries(EXPIRATION_OPTIONS).map(([label, value]) => (
+                                                    <SelectItem key={value} value={value}>
+                                                        {label}
+                                                    </SelectItem>
+                                                ))}
                                             </SelectContent>
                                         </Select>
                                     </div>
@@ -288,7 +284,17 @@ export default function NewPaste() {
 
                                     <Button
                                         type="button"
-                                        onClick={handleAutoDetect}
+                                        onClick={() => {
+                                            const detected = detectLanguage(formState.content);
+                                            setFormState(prev => ({
+                                                ...prev,
+                                                programmingLanguage: detected
+                                            }));
+                                            toast({
+                                                title: 'Language Detected',
+                                                description: `Detected language: ${SUPPORTED_LANGUAGES[detected]}`,
+                                            });
+                                        }}
                                         variant="outline"
                                         className="w-full"
                                     >

@@ -1,1 +1,3 @@
-tried to use redux to store current theme even after a reload,but forgot about redux reseting during a reloaded... Ooops !!! 
+1- I tried to use Redux to store the current theme even after a reload, but I forgot that Redux resets during a reload.
+2- I wasted time trying to figure out why the Chrome browser didn't store routes (stateless). The reason behind this was that I had enabled preloading in Chrome, which forces the browser to prefetch the page when it’s not in focus.
+3- I fixed several issues regarding the theme provider by Shadcn, removed all the unnecessary mount checks I used to avoid Hydration errors, and switched to client-side rendering (CSR).
