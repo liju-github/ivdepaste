@@ -28,3 +28,4 @@ export const colorThemes = [
     "sunset-warmth"
 ];
 
+export const applicationName = "application"

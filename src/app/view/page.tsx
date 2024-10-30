@@ -16,8 +16,8 @@ interface Paste {
     content: string;
     visibility: 'public' | 'private';
     user_id: string;
-    created_at: string;
-    expires_at: string | null;
+    createdAt: string;
+    expiresAt: string | null;
 }
 
 interface ErrorState {
@@ -28,6 +28,7 @@ interface ErrorState {
 const FormattedDate = ({ date }: { date: string }) => {
     const [formattedDate, setFormattedDate] = useState<string>('Loading...');
 
+    console.log('date is ', date)
     useEffect(() => {
         setFormattedDate(new Date(date).toLocaleString());
     }, [date]);
@@ -54,7 +55,7 @@ export default function ViewPaste() {
     const [error, setError] = useState<ErrorState | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isMounted, setIsMounted] = useState(false);
-    const [isSettingsOpen, setIsSettingsOpen] = useState(false); 
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
     const [fontSize, setFontSize] = useState<number>(16);
     const [fontFamily, setFontFamily] = useState<string>('');
@@ -78,13 +79,15 @@ export default function ViewPaste() {
                     .select('*')
                     .eq('id', pasteId)
                     .single();
+                
+                console.log("the paste is",paste)
 
                 if (fetchError || !paste) {
                     setError({ type: 'not-found', message: 'Paste not found' });
                     return;
                 }
 
-                if (paste.expires_at && new Date(paste.expires_at) < new Date()) {
+                if (paste.expiresAt && new Date(paste.expiresAt) < new Date()) {
                     setError({ type: 'expired', message: 'This paste has expired' });
                     return;
                 }
@@ -167,11 +170,13 @@ export default function ViewPaste() {
                     <div className="flex justify-between items-center mb-4">
                         <div className="flex flex-col">
                             <p className="text-sm text-muted-foreground">
-                                Created: <FormattedDate date={paste.created_at} />
+                                {(paste.createdAt !== undefined) ? (
+                                    <span>Created: <FormattedDate date={paste.createdAt} /></span>
+                                ) : null}
                             </p>
-                            {paste.expires_at && (
+                            {paste.expiresAt && (
                                 <p className="text-sm text-muted-foreground">
-                                    Expires: <FormattedDate date={paste.expires_at} />
+                                    Expires: <FormattedDate date={paste.expiresAt} />
                                 </p>
                             )}
                         </div>
@@ -188,7 +193,7 @@ export default function ViewPaste() {
                         style={{
                             fontSize: `${fontSize}px`,
                             fontLanguageOverride: "normal",
-                            MozFontFeatureSettings:"normal",
+                            MozFontFeatureSettings: "normal",
                             fontStyle: "italic",
                             color: fontColor,
                         }}
@@ -208,7 +213,7 @@ export default function ViewPaste() {
                 <Card className="fixed bottom-16 right-8 p-4 rounded-lg shadow-lg z-50">
                     <CardHeader>
                         <h2 className="text-xl font-semibold">Font Settings</h2>
-                        
+
                     </CardHeader>
                     <CardContent>
                         {/* Font Size Control */}
