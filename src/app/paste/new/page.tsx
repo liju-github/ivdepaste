@@ -18,6 +18,7 @@ import { supabase } from '@/src/lib/supabase';
 import { v4 as uuidv4 } from 'uuid';
 import { Paste } from '@/types';
 import { useToast } from '@/src/hooks/use-toast';
+import { detectLanguage, SUPPORTED_LANGUAGES, ProgrammingLanguage } from '@/src/lib/languagedetector';
 
 interface PasteStats {
     wordCount: number;
@@ -41,20 +42,7 @@ const EXPIRATION_OPTIONS = {
 
 type ExpirationOption = typeof EXPIRATION_OPTIONS[keyof typeof EXPIRATION_OPTIONS];
 
-const SUPPORTED_LANGUAGES = {
-    text: 'Plain Text',
-    javascript: 'JavaScript',
-    python: 'Python',
-    java: 'Java',
-    go: 'Go',
-    rust: 'Rust',
-    php: 'PHP',
-    ruby: 'Ruby',
-    html: 'HTML',
-    css: 'CSS',
-} as const;
-
-type ProgrammingLanguage = keyof typeof SUPPORTED_LANGUAGES;
+const LINE_LIMIT = 1000;
 
 const getExpirationDate = (option: ExpirationOption): string | null => {
     if (option === 'permanent') return null;
@@ -92,50 +80,65 @@ export default function NewPaste() {
     const router = useRouter();
     const { toast } = useToast();
     const [mounted, setMounted] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [lineLimitReached, setLineLimitReached] = useState(false);
 
-    const [formState, setFormState] = useState({
+    const defaultFormState = {
         title: '',
         content: '',
         expiration: '1mo' as ExpirationOption,
-        programmingLanguage: 'text' as ProgrammingLanguage
-    });
+        programmingLanguage: 'text' as ProgrammingLanguage,
+    };
 
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
+    const loadFormState = () => {
+        const savedFormState = localStorage.getItem('pasteFormData');
+        return savedFormState ? JSON.parse(savedFormState) : defaultFormState;
+    };
 
-    useEffect(() => setMounted(true), []);
+    const [formState, setFormState] = useState(loadFormState);
+
+    const saveFormState = (state: typeof defaultFormState) => {
+        localStorage.setItem('pasteFormData', JSON.stringify(state));
+    };
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    useEffect(() => {
+        saveFormState(formState);
+    }, [formState]);
 
     const stats = useMemo(() => {
         if (!formState.content) return { wordCount: 0, charCount: 0, lineCount: 0 };
 
+        const lineCount = formState.content.split('\n').length - (formState.content.endsWith('\n') ? 1 : 0);
+        setLineLimitReached(lineCount > LINE_LIMIT);
+
         return {
             charCount: formState.content.length,
             wordCount: formState.content.trim().split(/\s+/).filter(Boolean).length,
-            lineCount: formState.content.split('\n').length - (formState.content.endsWith('\n') ? 1 : 0)
+            lineCount,
         };
     }, [formState.content]);
 
-    const detectLanguage = (text: string): ProgrammingLanguage => {
-        const patterns: Record<ProgrammingLanguage, RegExp> = {
-            javascript: /(function|const|let|var|=>)/,
-            python: /(def|print|import.*from|class.*:)/,
-            java: /(public class|private|protected|package)/,
-            go: /(func|package|import|defer)/,
-            php: /(<\?php|\$[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)/,
-            ruby: /(def|class|require|gem|attr_)/,
-            html: /(<html|<div|<body|<head|<!DOCTYPE)/i,
-            css: /(@media|@import|{.*}|[a-z-]+\s*:)/,
-            rust: /(fn|let mut|impl|struct|enum)/,
-            text: /./
-        };
+    const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        const newContent = e.target.value;
+        const newLineCount = newContent.split('\n').length - (newContent.endsWith('\n') ? 1 : 0);
 
-        for (const [lang, pattern] of Object.entries(patterns)) {
-            if (pattern.test(text) && lang !== 'text') {
-                return lang as ProgrammingLanguage;
-            }
+        if (newLineCount > LINE_LIMIT) {
+            setLineLimitReached(true);
+            toast({
+                title: 'Line Limit Reached',
+                description: `The maximum allowed lines is ${LINE_LIMIT}.`,
+                variant: 'destructive',
+            });
+            return;
         }
 
-        return 'text';
+        setLineLimitReached(false);
+        setFormState((prev: any) => ({ ...prev, content: newContent }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -188,6 +191,7 @@ export default function NewPaste() {
                 description: 'Your paste has been created successfully.',
             });
 
+            localStorage.removeItem('pasteFormData');  
             router.push(`/view?pasteId=${pasteData.id}`);
             router.refresh();
         } catch (err) {
@@ -215,13 +219,13 @@ export default function NewPaste() {
                             <Input
                                 placeholder="Paste Title (optional)"
                                 value={formState.title}
-                                onChange={(e) => setFormState(prev => ({ ...prev, title: e.target.value }))}
+                                onChange={(e) => setFormState((prev: any) => ({ ...prev, title: e.target.value }))}
                                 className="w-full"
                             />
                             <Textarea
                                 placeholder="Paste Content"
                                 value={formState.content}
-                                onChange={(e) => setFormState(prev => ({ ...prev, content: e.target.value }))}
+                                onChange={handleContentChange}
                                 required
                                 className="min-h-[calc(100vh-300px)] font-mono"
                             />
@@ -243,7 +247,7 @@ export default function NewPaste() {
                                         <Select
                                             value={formState.expiration}
                                             onValueChange={(value: ExpirationOption) =>
-                                                setFormState(prev => ({ ...prev, expiration: value }))
+                                                setFormState((prev: any) => ({ ...prev, expiration: value }))
                                             }
                                         >
                                             <SelectTrigger>
@@ -266,10 +270,11 @@ export default function NewPaste() {
                                         <Select
                                             value={formState.programmingLanguage}
                                             onValueChange={(value: ProgrammingLanguage) =>
-                                                setFormState(prev => ({ ...prev, programmingLanguage: value }))
+                                                setFormState((prev: any) => ({ ...prev, programmingLanguage: value }))
                                             }
                                         >
                                             <SelectTrigger>
+
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -286,7 +291,7 @@ export default function NewPaste() {
                                         type="button"
                                         onClick={() => {
                                             const detected = detectLanguage(formState.content);
-                                            setFormState(prev => ({
+                                            setFormState((prev: any) => ({
                                                 ...prev,
                                                 programmingLanguage: detected
                                             }));
@@ -312,7 +317,7 @@ export default function NewPaste() {
                             <div className="pt-4 border-t">
                                 <Button
                                     type="submit"
-                                    disabled={isSubmitting}
+                                    disabled={isSubmitting || lineLimitReached}
                                     className="w-full"
                                 >
                                     {isSubmitting ? 'Creating Paste...' : 'Create Paste'}

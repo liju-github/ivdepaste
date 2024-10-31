@@ -134,7 +134,7 @@ export default function ViewPaste() {
         );
     }
 
-    // Error Handling
+    
     if (error) {
         return (
             <div className="container mx-auto p-4">
@@ -153,12 +153,12 @@ export default function ViewPaste() {
         );
     }
 
-    // No paste or valid data
+    
     if (!paste) {
         return null;
     }
 
-    // Render the Paste Content
+    
     return (
         <div className="container mx-auto p-4"  >
             <Card>
@@ -203,12 +203,12 @@ export default function ViewPaste() {
                 </CardContent>
             </Card>
 
-            {/* Settings Icon */}
+            {}
             <div className="fixed bottom-8 right-8 bg-gray-200 p-2 rounded-full cursor-pointer shadow-lg" onClick={() => setIsSettingsOpen(!isSettingsOpen)}>
                 <FiSettings size={24} />
             </div>
 
-            {/* Settings Card */}
+            {}
             {isSettingsOpen && (
                 <Card className="fixed bottom-16 right-8 p-4 rounded-lg shadow-lg z-50">
                     <CardHeader>
@@ -216,7 +216,7 @@ export default function ViewPaste() {
 
                     </CardHeader>
                     <CardContent>
-                        {/* Font Size Control */}
+                        {}
                         <div className="mb-4">
                             <label className="block mb-2 font-medium">Font Size:</label>
                             <Slider
@@ -228,7 +228,7 @@ export default function ViewPaste() {
                             />
                         </div>
 
-                        {/* Font Family Control */}
+                        {}
                         <div className="mb-4">
                             <label className="block mb-2 font-medium">Font Family:</label>
                             <select
@@ -242,7 +242,7 @@ export default function ViewPaste() {
                             </select>
                         </div>
 
-                        {/* Font Color Control */}
+                        {}
                         <div className="mb-4">
                             <label className="block mb-2 font-medium">Font Color:</label>
                             <input
@@ -253,7 +253,7 @@ export default function ViewPaste() {
                             />
                         </div>
 
-                        {/* Reset and Close Buttons */}
+                        {}
                         <div className="flex justify-between">
                             <Button
                                 onClick={() => {

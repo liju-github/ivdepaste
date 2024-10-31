@@ -15,13 +15,22 @@ const NAVIGATION_ROUTES: NavigationRoute[] = [
     { key: "m", path: "/paste/my", description: "My Pastes" },
     { key: "n", path: "/paste/new", description: "New Paste" },
     { key: "h", path: "/", description: "Home" },
+    { key: "s", path: "/search", description: "Search" }, //connect with the mypaste search
+    { key: "p", path: "/profile", description: "Profile" }, //profile showing stats of the user, total replies given , likes received, dislikes received etc..... 
     { key: "►", path: "Forward", description: "Going Forward" },
     { key: "◄", path: "Backward", description: "Going Backward" },
 ];
 
 const KEYBINDING_HELP = [
     { keys: "Shift + W", description: "Toggle Theme" },
-    // Add more keybindings here if needed
+    { keys: "Shift + F", description: "Toggle Fullscreen" },
+    { keys: "Shift + S", description: "Save Current Page" },
+    { keys: "Shift + R", description: "Refresh Page" },
+    { keys: "Shift + C", description: "Copy Page URL" },
+    { keys: "Shift + Z", description: "Zoom In" },
+    { keys: "Shift + X", description: "Zoom Out" },
+    { keys: "Shift + O", description: "Reset Zoom" },
+    
 ];
 
 type Props = {
@@ -30,7 +39,7 @@ type Props = {
     removeHelpOnThemeTransition?: boolean;
 };
 
-export function KeybindingShortcutsProvider({ children, showHint = true, removeHelpOnThemeTransition=false}: Props) {
+export function KeybindingShortcutsProvider({ children, showHint = true, removeHelpOnThemeTransition = false }: Props) {
     const router = useRouter();
     const pathname = usePathname();
     const { toast } = useToast();
@@ -95,6 +104,39 @@ export function KeybindingShortcutsProvider({ children, showHint = true, removeH
                     });
                 }
             }
+
+            // New keybindings
+            if (event.shiftKey) {
+                switch (event.key.toLowerCase()) {
+                    case 'f':
+                        event.preventDefault();
+                        toggleFullscreen();
+                        break;
+                    
+                    case 'r':
+                        event.preventDefault();
+                        refreshPage();
+                        break;
+                    case 'c':
+                        event.preventDefault();
+                        copyPageUrl();
+                        break;
+                    
+                    case 'z':
+                        event.preventDefault();
+                        zoomIn();
+                        break;
+                    case 'x':
+                        event.preventDefault();
+                        zoomOut();
+                        break;
+                    case 'o':
+                        event.preventDefault();
+                        resetZoom();
+                        break;
+                    
+                }
+            }
         };
 
         const handleKeyUp = (event: KeyboardEvent) => {
@@ -112,6 +154,46 @@ export function KeybindingShortcutsProvider({ children, showHint = true, removeH
         };
     }, [router, toast, pathname]);
 
+    const toggleFullscreen = () => {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen();
+            toast({ title: "Fullscreen", description: "Entered fullscreen mode", duration: 500 });
+        } else {
+            document.exitFullscreen();
+            toast({ title: "Fullscreen", description: "Exited fullscreen mode", duration: 500 });
+        }
+    };
+
+    
+
+    const refreshPage = () => {
+        window.location.reload();
+    };
+
+    const copyPageUrl = () => {
+        navigator.clipboard.writeText(window.location.href);
+        toast({ title: "Copy", description: "Page URL copied to clipboard", duration: 500 });
+    };
+
+    
+
+    const zoomIn = () => {
+        document.body.style.zoom = `${(parseFloat(document.body.style.zoom) || 1) * 1.1}`;
+        toast({ title: "Zoom", description: "Zoomed in", duration: 500 });
+    };
+
+    const zoomOut = () => {
+        document.body.style.zoom = `${(parseFloat(document.body.style.zoom) || 1) / 1.1}`;
+        toast({ title: "Zoom", description: "Zoomed out", duration: 500 });
+    };
+
+    const resetZoom = () => {
+        document.body.style.zoom = "1";
+        toast({ title: "Zoom", description: "Zoom reset", duration: 500 });
+    };
+
+    
+
     return (
         <>
             {children}
@@ -119,21 +201,28 @@ export function KeybindingShortcutsProvider({ children, showHint = true, removeH
             {showHint && isShiftPressed && (
                 <>
                     <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-40" />
-                    <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 hidden md:block">
-                        <ShortcutsCard title="Navigation Shortcuts" items={NAVIGATION_ROUTES.map(route => ({
-                            keys: `Shift + ${route.key.toUpperCase()}`, // Update to include 'Shift +'
-                            description: route.description
-                        }))} />
-                        <ShortcutsCard title="Keybindings Help" items={KEYBINDING_HELP} />
+                    <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 hidden md:flex space-x-4">
+                        <ShortcutsCard
+                            title="Navigation Shortcuts"
+                            items={NAVIGATION_ROUTES.map(route => ({
+                                keys: `Shift + ${route.key.toUpperCase()}`,
+                                description: route.description
+                            }))}
+                        />
+                        <ShortcutsCard
+                            title="Keybindings Help"
+                            items={KEYBINDING_HELP}
+                        />
                     </div>
                 </>
             )}
         </>
     );
+
 }
 
 const ShortcutsCard = ({ title, items }: { title: string; items: { keys: string; description: string }[] }) => (
-    <Card className="w-96 p-0 mb-4">
+    <Card className="w-96 p-0 mb-4 ">
         <CardHeader className="pb-5">
             <CardTitle className="text-lg font-semibold">{title}</CardTitle>
         </CardHeader>
